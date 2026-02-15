@@ -1,7 +1,7 @@
 import { CALORIE_LEVELS } from "./constants.js";
 import { protectPage } from "./auth-guard.js";
 import { setStatus, wireGlobalActions } from "./layout.js";
-import { addFoodLog, getRecentFoodLogs } from "./firebase.js";
+import { addFoodLog, getRecentFoodLogs, formatFirebaseError } from "./firebase.js";
 import {
   toDateTimeInputValue,
   withHourOffset,
@@ -75,7 +75,7 @@ protectPage((user) => {
   wireGlobalActions();
 
   refreshLogs(user).catch((error) => {
-    setStatus(error.message || "Could not load food logs.", "alert");
+    setStatus(formatFirebaseError(error), "alert");
   });
 
   form.addEventListener("submit", async (event) => {
@@ -94,6 +94,7 @@ protectPage((user) => {
     }
 
     try {
+      setStatus("Saving meal...", "info");
       await addFoodLog(user.uid, {
         eatenAt,
         meal,
@@ -116,7 +117,7 @@ protectPage((user) => {
         window.location.href = buildChartUrl("food");
       }
     } catch (error) {
-      setStatus(error.message || "Could not save food log.", "alert");
+      setStatus(formatFirebaseError(error), "alert");
     }
   });
 

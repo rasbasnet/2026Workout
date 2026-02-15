@@ -30,6 +30,14 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
    - `rasbasnet.github.io`
    - `localhost` (for local testing)
 
+## Save Troubleshooting
+
+- If save actions fail with permissions errors:
+  1. Open Firebase Console -> Firestore Database -> Rules
+  2. Paste rules from `/Users/rasbasnet/Documents/code/2026Workout/firestore.rules`
+  3. Publish rules, then refresh the app
+- If save actions fail with `failed-precondition`, enable Firestore first.
+
 ## Data Model
 
 - `users/{uid}/profile/meta`

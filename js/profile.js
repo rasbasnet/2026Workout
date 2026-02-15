@@ -1,6 +1,6 @@
 import { protectPage } from "./auth-guard.js";
 import { wireGlobalActions, setStatus } from "./layout.js";
-import { getProfile, saveProfile } from "./firebase.js";
+import { getProfile, saveProfile, formatFirebaseError } from "./firebase.js";
 import { numberOrNull } from "./utils.js";
 
 const profileForm = document.getElementById("profileForm");
@@ -23,7 +23,7 @@ protectPage((user) => {
   wireGlobalActions();
 
   loadProfile(user).catch((error) => {
-    setStatus(error.message || "Could not load profile.", "alert");
+    setStatus(formatFirebaseError(error), "alert");
   });
 
   profileForm.addEventListener("submit", async (event) => {
@@ -43,10 +43,11 @@ protectPage((user) => {
     }
 
     try {
+      setStatus("Saving profile...", "info");
       await saveProfile(user.uid, payload);
       setStatus("Profile saved.", "success");
     } catch (error) {
-      setStatus(error.message || "Could not save profile.", "alert");
+      setStatus(formatFirebaseError(error), "alert");
     }
   });
 });

@@ -6,7 +6,8 @@ import {
   saveDailyWeight,
   getWeightLogs,
   getRecentWorkoutLogs,
-  getRecentFoodLogs
+  getRecentFoodLogs,
+  formatFirebaseError
 } from "./firebase.js";
 import {
   toDateInputValue,
@@ -170,12 +171,12 @@ protectPage((user) => {
   wireGlobalActions();
 
   refreshDashboard(user).catch((error) => {
-    setStatus(error.message || "Unable to load dashboard data.", "alert");
+    setStatus(formatFirebaseError(error), "alert");
   });
 
   profileModalForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    setModalStatus("");
+    setModalStatus("Saving profile...", "info");
     saveProfileModalBtn.disabled = true;
 
     const formData = new FormData(profileModalForm);
@@ -198,7 +199,7 @@ protectPage((user) => {
       await refreshDashboard(user);
       setStatus("Profile setup complete.", "success");
     } catch (error) {
-      setModalStatus(error.message || "Could not save profile.", "alert");
+      setModalStatus(formatFirebaseError(error), "alert");
     } finally {
       saveProfileModalBtn.disabled = false;
     }
@@ -218,6 +219,7 @@ protectPage((user) => {
     }
 
     try {
+      setStatus("Saving weight...", "info");
       await saveDailyWeight(user.uid, date, { date, weightKg, note });
       await saveProfile(user.uid, { currentWeightKg: weightKg });
       weightForm.reset();
@@ -233,7 +235,7 @@ protectPage((user) => {
         window.location.href = buildChartUrl("weight");
       }
     } catch (error) {
-      setStatus(error.message || "Could not save weight log.", "alert");
+      setStatus(formatFirebaseError(error), "alert");
     }
   });
 });

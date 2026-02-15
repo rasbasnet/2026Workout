@@ -9,7 +9,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
-  getFirestore,
+  initializeFirestore,
   collection,
   doc,
   getDoc,
@@ -43,7 +43,10 @@ let db;
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
-  db = getFirestore(app);
+  db = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+    useFetchStreams: false
+  });
 }
 
 export function ensureConfigured() {
@@ -52,6 +55,31 @@ export function ensureConfigured() {
       "Firebase is not configured yet. Update js/firebase.js with your Firebase project keys."
     );
   }
+}
+
+export function formatFirebaseError(error) {
+  const code = String(error?.code || "");
+
+  if (code === "permission-denied") {
+    return "Save blocked by Firestore rules. Deploy firestore.rules and ensure you are logged in.";
+  }
+  if (code === "failed-precondition") {
+    return "Firestore is not fully enabled yet. Enable Cloud Firestore in Firebase Console.";
+  }
+  if (code === "unavailable") {
+    return "Firestore is temporarily unavailable. Check internet and retry.";
+  }
+  if (code === "unauthenticated") {
+    return "You are not authenticated anymore. Sign in again.";
+  }
+  if (code === "not-found") {
+    return "Requested Firestore resource was not found.";
+  }
+  if (code === "resource-exhausted") {
+    return "Firestore quota exceeded. Check Firebase usage limits.";
+  }
+
+  return String(error?.message || "Unexpected Firebase error.");
 }
 
 export async function loginWithGoogle() {

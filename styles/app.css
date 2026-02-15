@@ -120,6 +120,7 @@ a {
     linear-gradient(145deg, #ffffff 0%, rgba(250, 253, 255, 0.93) 60%),
     radial-gradient(circle at 90% 10%, rgba(12, 140, 233, 0.14), transparent 42%);
   box-shadow: var(--shadow);
+  animation: rise 360ms ease both;
 }
 
 .hero h1 {
@@ -166,6 +167,7 @@ a {
   background: var(--card);
   padding: 16px;
   box-shadow: var(--shadow);
+  animation: rise 420ms ease both;
 }
 
 .panel h2,
@@ -562,6 +564,17 @@ th {
 .route-routine .steps li {
   padding: 8px 9px;
   margin: 8px 0;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 980px) {

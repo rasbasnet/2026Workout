@@ -1,7 +1,7 @@
 import { WORKOUT_STEPS } from "./constants.js";
 import { protectPage } from "./auth-guard.js";
 import { setStatus, wireGlobalActions } from "./layout.js";
-import { saveWorkoutLog, getRecentWorkoutLogs } from "./firebase.js";
+import { saveWorkoutLog, getRecentWorkoutLogs, formatFirebaseError } from "./firebase.js";
 import {
   toDateInputValue,
   withDayOffset,
@@ -161,7 +161,7 @@ protectPage((user) => {
   wireGlobalActions();
 
   refreshLogs(user).catch((error) => {
-    setStatus(error.message || "Could not load workout logs.", "alert");
+    setStatus(formatFirebaseError(error), "alert");
   });
 
   workoutForm.addEventListener("submit", async (event) => {
@@ -182,6 +182,7 @@ protectPage((user) => {
       selectedType === "auto" ? inferSessionType(selected) : selectedType || inferSessionType(selected);
 
     try {
+      setStatus("Saving workout...", "info");
       await saveWorkoutLog(user.uid, date, {
         date,
         sessionType,
@@ -199,7 +200,7 @@ protectPage((user) => {
         window.location.href = buildChartUrl("workout");
       }
     } catch (error) {
-      setStatus(error.message || "Could not save workout log.", "alert");
+      setStatus(formatFirebaseError(error), "alert");
     }
   });
 });

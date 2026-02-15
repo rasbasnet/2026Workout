@@ -4,7 +4,8 @@ import {
   getProfile,
   getRecentWorkoutLogs,
   getRecentFoodLogs,
-  getWeightLogs
+  getWeightLogs,
+  formatFirebaseError
 } from "./firebase.js";
 
 const workoutChartCanvas = document.getElementById("workoutChart");
@@ -285,7 +286,7 @@ protectPage((user) => {
     try {
       await loadCharts(user);
     } catch (error) {
-      setStatus(error.message || "Unable to build charts.", "alert");
+      setStatus(formatFirebaseError(error), "alert");
     }
   };
 
