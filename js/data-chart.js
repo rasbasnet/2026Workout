@@ -2,11 +2,13 @@ import { protectPage } from "./auth-guard.js";
 import { wireGlobalActions, setStatus } from "./layout.js";
 import {
   getProfile,
+  saveProfile,
   getRecentWorkoutLogs,
   getRecentFoodLogs,
   getWeightLogs,
   formatFirebaseError
 } from "./firebase.js";
+import { numberOrNull } from "./utils.js";
 
 const workoutChartCanvas = document.getElementById("workoutChart");
 const foodChartCanvas = document.getElementById("foodChart");
@@ -17,16 +19,20 @@ const metricGoalEta = document.getElementById("metricGoalEta");
 const metricConsistency = document.getElementById("metricConsistency");
 const metricMealMix = document.getElementById("metricMealMix");
 const fromTrackerNotice = document.getElementById("fromTrackerNotice");
+const chartGoalForm = document.getElementById("chartGoalForm");
+const chartGoalWeight = document.getElementById("chartGoalWeight");
+const chartTargetDate = document.getElementById("chartTargetDate");
 
 let workoutChart;
 let foodChart;
 let weightChart;
+let initialized = false;
 
 function getFlowLabel() {
   const from = new URLSearchParams(window.location.search).get("from") || "";
-  if (from === "workout") return "Workout log saved. Charts now include your latest workout data.";
-  if (from === "food") return "Food log saved. Charts now include your latest meal entry.";
-  if (from === "weight") return "Weight log saved. Weight trend and ETA have been updated.";
+  if (from === "workout") return "Workout log saved. Charts include your latest workout entry.";
+  if (from === "food") return "Food log saved. Charts include your latest meal entry.";
+  if (from === "weight") return "Weight log saved. Weight trend is refreshed.";
   return "";
 }
 
@@ -58,19 +64,21 @@ function trendSlope(weightLogs) {
 }
 
 function estimateEta(profile, weightLogs) {
-  if (!profile?.goalWeightKg || weightLogs.length < 2) return "Need more weight logs";
+  const goalWeight = numberOrNull(profile?.goalWeightKg);
+  if (!goalWeight || weightLogs.length < 2) return "Need more data";
+
   const latest = [...weightLogs].sort((a, b) => b.date.localeCompare(a.date))[0];
   const slope = trendSlope(weightLogs.slice(0, 30));
-  const distance = Number(profile.goalWeightKg) - Number(latest.weightKg);
+  const distance = goalWeight - Number(latest.weightKg);
 
   if (distance === 0) return "Goal reached";
   if (slope === 0) return "Flat trend";
 
   const towardGoal = distance > 0 ? slope > 0 : slope < 0;
-  if (!towardGoal) return "Trend moving away";
+  if (!towardGoal) return "Trend away from goal";
 
   const days = Math.ceil(Math.abs(distance / slope));
-  if (!Number.isFinite(days) || days > 3650) return "Insufficient trend quality";
+  if (!Number.isFinite(days) || days > 3650) return "Insufficient trend";
 
   const eta = new Date();
   eta.setDate(eta.getDate() + days);
@@ -139,12 +147,22 @@ function toWeightSeries(weightLogs, goalWeight) {
   };
 }
 
+function chartTheme() {
+  return {
+    text: "#a7b4cc",
+    grid: "rgba(125, 140, 165, 0.15)",
+    blue: "#7f8bff",
+    green: "#9ce56a",
+    yellow: "#f4c45d",
+    red: "#ff8b82"
+  };
+}
+
 function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
   const ChartCtor = window.Chart;
-  if (!ChartCtor) {
-    throw new Error("Chart.js did not load.");
-  }
+  if (!ChartCtor) throw new Error("Chart.js did not load.");
 
+  const theme = chartTheme();
   const workoutSeries = toDailyWorkoutSeries(workoutLogs, 30);
   const foodSeries = toDailyFoodSeries(foodLogs, 30);
   const weightSeries = toWeightSeries(weightLogs, profile?.goalWeightKg);
@@ -162,16 +180,21 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
           label: "Steps completed",
           data: workoutSeries.steps,
           tension: 0.34,
-          borderColor: "#0c8ce9",
-          backgroundColor: "rgba(12, 140, 233, 0.2)",
+          borderColor: theme.blue,
+          backgroundColor: "rgba(127, 139, 255, 0.2)",
           fill: true,
-          pointRadius: 2
+          pointRadius: 1.8
         }
       ]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: theme.text } } },
+      scales: {
+        x: { ticks: { color: theme.text }, grid: { color: theme.grid } },
+        y: { ticks: { color: theme.text }, grid: { color: theme.grid }, beginAtZero: true }
+      }
     }
   });
 
@@ -180,17 +203,18 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
     data: {
       labels: foodSeries.labels,
       datasets: [
-        { label: "Low", data: foodSeries.low, backgroundColor: "#57b583" },
-        { label: "Medium", data: foodSeries.medium, backgroundColor: "#f6b53f" },
-        { label: "High", data: foodSeries.high, backgroundColor: "#ef7f58" }
+        { label: "Low", data: foodSeries.low, backgroundColor: theme.green },
+        { label: "Medium", data: foodSeries.medium, backgroundColor: theme.yellow },
+        { label: "High", data: foodSeries.high, backgroundColor: theme.red }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: theme.text } } },
       scales: {
-        x: { stacked: true },
-        y: { stacked: true, beginAtZero: true }
+        x: { ticks: { color: theme.text }, grid: { color: theme.grid }, stacked: true },
+        y: { ticks: { color: theme.text }, grid: { color: theme.grid }, stacked: true, beginAtZero: true }
       }
     }
   });
@@ -203,16 +227,17 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
         {
           label: "Weight (kg)",
           data: weightSeries.values,
-          borderColor: "#0c8ce9",
-          backgroundColor: "rgba(12, 140, 233, 0.16)",
+          borderColor: theme.blue,
+          backgroundColor: "rgba(127, 139, 255, 0.15)",
           tension: 0.3,
-          fill: true
+          fill: true,
+          pointRadius: 2
         },
         {
           label: "Goal",
           data: weightSeries.goal,
-          borderColor: "#e5822e",
-          borderDash: [7, 5],
+          borderColor: "#9ce56a",
+          borderDash: [6, 5],
           pointRadius: 0,
           tension: 0
         }
@@ -220,7 +245,12 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: theme.text } } },
+      scales: {
+        x: { ticks: { color: theme.text }, grid: { color: theme.grid } },
+        y: { ticks: { color: theme.text }, grid: { color: theme.grid } }
+      }
     }
   });
 }
@@ -233,32 +263,29 @@ function renderSummary(profile, workoutLogs, foodLogs, weightLogs) {
 
   metricConsistency.textContent = `${consistency}%`;
   metricMealMix.textContent = `${mealMix.low}/${mealMix.medium}/${mealMix.high}`;
-  metricGoalEta.textContent = eta;
+  metricGoalEta.textContent = `ETA: ${eta}`;
 
   trendNote.textContent =
     slope === 0
-      ? "Weight trend is currently flat across your latest data window."
-      : `Weight trend: ${slope.toFixed(3)} kg/day based on your latest logs.`;
+      ? "Weight trend is flat in the current sample window."
+      : `Weight trend: ${slope.toFixed(3)} kg/day over latest logs.`;
+
+  chartGoalWeight.value = profile?.goalWeightKg || "";
+  chartTargetDate.value = profile?.targetDate || profile?.goalDate || "";
 
   const rows = [
     ["Height", profile?.heightCm ? `${profile.heightCm} cm` : "Not set"],
-    ["Current Weight", profile?.currentWeightKg ? `${profile.currentWeightKg} kg` : "Not set"],
+    ["Starting Weight", profile?.startingWeightKg ? `${profile.startingWeightKg} kg` : "Not set"],
+    ["Starting Date", profile?.startingDate || "Not set"],
     ["Goal Weight", profile?.goalWeightKg ? `${profile.goalWeightKg} kg` : "Not set"],
-    ["Goal Date", profile?.goalDate || "Not set"],
+    ["Target Date", profile?.targetDate || profile?.goalDate || "Not set"],
     ["Workout Logs", String(workoutLogs.length)],
     ["Food Logs", String(foodLogs.length)],
     ["Weight Logs", String(weightLogs.length)]
   ];
 
   summaryBody.innerHTML = rows
-    .map(
-      ([name, value]) => `
-        <tr>
-          <td>${name}</td>
-          <td>${value}</td>
-        </tr>
-      `
-    )
+    .map(([name, value]) => `<tr><td>${name}</td><td>${value}</td></tr>`)
     .join("");
 }
 
@@ -272,9 +299,8 @@ async function loadCharts(user) {
 
   renderCharts(profile, workoutLogs, foodLogs, weightLogs);
   renderSummary(profile, workoutLogs, foodLogs, weightLogs);
+  return { profile };
 }
-
-let initialized = false;
 
 protectPage((user) => {
   if (initialized) return;
@@ -291,6 +317,28 @@ protectPage((user) => {
   };
 
   refresh();
+
+  chartGoalForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const goalWeightKg = numberOrNull(chartGoalWeight.value);
+    const targetDate = String(chartTargetDate.value || "");
+
+    if (!goalWeightKg) {
+      setStatus("Goal weight is required.", "alert");
+      return;
+    }
+
+    try {
+      setStatus("Saving goal...", "info");
+      await saveProfile(user.uid, { goalWeightKg, targetDate });
+      setStatus("Goal updated.", "success");
+      await refresh();
+    } catch (error) {
+      setStatus(formatFirebaseError(error), "alert");
+    }
+  });
+
   const timer = window.setInterval(refresh, 15000);
   window.addEventListener("beforeunload", () => window.clearInterval(timer), { once: true });
 });

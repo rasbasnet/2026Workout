@@ -3,36 +3,32 @@ import { wireGlobalActions, setStatus } from "./layout.js";
 import {
   saveProfile,
   getProfile,
-  saveDailyWeight,
   getWeightLogs,
   getRecentWorkoutLogs,
   getRecentFoodLogs,
   formatFirebaseError
 } from "./firebase.js";
-import {
-  toDateInputValue,
-  formatDate,
-  numberOrNull,
-  buildChartUrl,
-  escapeHtml
-} from "./utils.js";
+import { toDateInputValue, numberOrNull } from "./utils.js";
 
-const weightForm = document.getElementById("weightForm");
-const weightDateInput = document.getElementById("weightDate");
-const weightHistory = document.getElementById("weightHistory");
-const profileSummary = document.getElementById("profileSummary");
-const weightSaveHint = document.getElementById("weightSaveHint");
 const workoutCountNode = document.getElementById("metricWorkoutDays");
 const foodCountNode = document.getElementById("metricMealsWeek");
-const latestWeightNode = document.getElementById("metricLatestWeight");
 const goalEtaNode = document.getElementById("metricGoalEta");
+const weightTrendText = document.getElementById("weightTrendText");
+const miniWeightChartCanvas = document.getElementById("miniWeightChart");
+const miniActivityChartCanvas = document.getElementById("miniActivityChart");
 
 const profileModalBackdrop = document.getElementById("profileModalBackdrop");
 const profileModalForm = document.getElementById("profileModalForm");
 const profileModalStatus = document.getElementById("profileModalStatus");
 const saveProfileModalBtn = document.getElementById("saveProfileModalBtn");
+const modalStartingDate = document.getElementById("modalStartingDate");
 
-weightDateInput.value = toDateInputValue();
+if (modalStartingDate) {
+  modalStartingDate.value = toDateInputValue();
+}
+
+let miniWeightChart;
+let miniActivityChart;
 
 function setModalStatus(message = "", type = "") {
   if (!profileModalStatus) return;
@@ -40,124 +36,173 @@ function setModalStatus(message = "", type = "") {
   profileModalStatus.className = type;
 }
 
-function profileIsComplete(profile) {
-  return Boolean(
-    profile && numberOrNull(profile.heightCm) && numberOrNull(profile.currentWeightKg) && numberOrNull(profile.goalWeightKg)
-  );
+function profileHasStart(profile) {
+  return Boolean(profile?.startingWeightKg && profile?.startingDate);
 }
 
-function slopePerDay(items) {
-  if (items.length < 2) return 0;
-  const sorted = [...items].sort((a, b) => a.date.localeCompare(b.date));
+function goalWeightOf(profile) {
+  return numberOrNull(profile?.goalWeightKg);
+}
+
+function calcEta(profile, weightLogs) {
+  const goalWeight = goalWeightOf(profile);
+  if (!goalWeight) return "Not set";
+
+  const sorted = [...weightLogs].sort((a, b) => a.date.localeCompare(b.date));
+  const latest = sorted.at(-1);
+  if (!latest) return "Need weight logs";
+  if (sorted.length < 2) return "Need more data";
+
   const first = sorted[0];
-  const last = sorted[sorted.length - 1];
-  const dayDiff = Math.max(1, (new Date(last.date) - new Date(first.date)) / 86400000);
-  return (Number(last.weightKg) - Number(first.weightKg)) / dayDiff;
-}
-
-function estimateGoalEta(profile, weightLogs) {
-  if (!profile?.goalWeightKg || weightLogs.length < 2) return "Need more weight logs";
-  const latest = [...weightLogs].sort((a, b) => b.date.localeCompare(a.date))[0];
-  const slope = slopePerDay(weightLogs.slice(0, 30));
-  const distance = Number(profile.goalWeightKg) - Number(latest.weightKg);
+  const days = Math.max(1, (new Date(latest.date) - new Date(first.date)) / 86400000);
+  const slope = (Number(latest.weightKg) - Number(first.weightKg)) / days;
+  const distance = goalWeight - Number(latest.weightKg);
 
   if (distance === 0) return "Goal reached";
   if (slope === 0) return "Flat trend";
 
   const towardGoal = distance > 0 ? slope > 0 : slope < 0;
-  if (!towardGoal) return "Current trend is away from goal";
+  if (!towardGoal) return "Trend away from goal";
 
-  const days = Math.ceil(Math.abs(distance / slope));
-  if (!Number.isFinite(days) || days > 3650) return "Need more stable data";
+  const etaDays = Math.ceil(Math.abs(distance / slope));
+  if (!Number.isFinite(etaDays) || etaDays > 3650) return "Insufficient trend";
 
   const eta = new Date();
-  eta.setDate(eta.getDate() + days);
-  return `${days} days (${eta.toLocaleDateString()})`;
+  eta.setDate(eta.getDate() + etaDays);
+  return `${etaDays}d (${eta.toLocaleDateString()})`;
 }
 
-function renderWeightHistory(items) {
-  if (!items.length) {
-    weightHistory.innerHTML = '<li class="list-item">No weight logs yet.</li>';
-    return;
+function lastNDates(days) {
+  const labels = [];
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    labels.push(d.toISOString().slice(0, 10));
   }
-
-  weightHistory.innerHTML = [...items]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 8)
-    .map(
-      (item) => `
-        <li class="list-item">
-          <div class="item-head">
-            <span>${formatDate(item.date)}</span>
-            <span>${item.weightKg} kg</span>
-          </div>
-          ${item.note ? `<p class="inline-note">${escapeHtml(item.note)}</p>` : ""}
-        </li>
-      `
-    )
-    .join("");
+  return labels;
 }
 
-function renderProfileSummary(profile) {
-  if (!profile) {
-    profileSummary.textContent = "Profile not set yet.";
-    return;
-  }
+function renderCharts(weightLogs, workoutLogs, foodLogs) {
+  const ChartCtor = window.Chart;
+  if (!ChartCtor) return;
 
-  const pieces = [
-    profile.heightCm ? `Height ${profile.heightCm} cm` : null,
-    profile.currentWeightKg ? `Current ${profile.currentWeightKg} kg` : null,
-    profile.goalWeightKg ? `Goal ${profile.goalWeightKg} kg` : null,
-    profile.goalDate ? `Target ${profile.goalDate}` : null
-  ].filter(Boolean);
+  const weightSorted = [...weightLogs]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-21);
 
-  profileSummary.textContent = pieces.length ? pieces.join(" | ") : "Profile partially set.";
+  miniWeightChart?.destroy();
+  miniWeightChart = new ChartCtor(miniWeightChartCanvas, {
+    type: "line",
+    data: {
+      labels: weightSorted.map((item) => item.date.slice(5)),
+      datasets: [
+        {
+          label: "Weight",
+          data: weightSorted.map((item) => Number(item.weightKg)),
+          borderColor: "#7f8bff",
+          backgroundColor: "rgba(127, 139, 255, 0.2)",
+          tension: 0.35,
+          fill: true,
+          pointRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  const labels = lastNDates(14);
+  const workoutSet = new Set(
+    workoutLogs.filter((x) => (x.completedSteps || []).length > 0).map((x) => x.date)
+  );
+
+  const mealByDay = new Map();
+  foodLogs.forEach((item) => {
+    const day = String(item.eatenAt || "").slice(0, 10);
+    mealByDay.set(day, (mealByDay.get(day) || 0) + 1);
+  });
+
+  miniActivityChart?.destroy();
+  miniActivityChart = new ChartCtor(miniActivityChartCanvas, {
+    type: "bar",
+    data: {
+      labels: labels.map((d) => d.slice(5)),
+      datasets: [
+        {
+          label: "Workout day",
+          data: labels.map((d) => (workoutSet.has(d) ? 1 : 0)),
+          backgroundColor: "#92f16f"
+        },
+        {
+          label: "Meals",
+          data: labels.map((d) => mealByDay.get(d) || 0),
+          backgroundColor: "#7f8bff"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: "#9fb0c7" } } },
+      scales: {
+        x: { ticks: { color: "#95a6bf" }, grid: { color: "rgba(130,145,170,0.15)" } },
+        y: { ticks: { color: "#95a6bf" }, grid: { color: "rgba(130,145,170,0.15)" }, beginAtZero: true }
+      }
+    }
+  });
 }
 
-function showProfileModal(profile = null) {
-  if (!profileModalBackdrop) return;
+function showModal(profile = null) {
   profileModalBackdrop.classList.remove("hidden");
-
   if (profile) {
     profileModalForm.heightCm.value = profile.heightCm || "";
-    profileModalForm.currentWeightKg.value = profile.currentWeightKg || "";
+    profileModalForm.startingWeightKg.value = profile.startingWeightKg || "";
+    profileModalForm.startingDate.value = profile.startingDate || toDateInputValue();
     profileModalForm.goalWeightKg.value = profile.goalWeightKg || "";
-    profileModalForm.goalDate.value = profile.goalDate || "";
+    profileModalForm.targetDate.value = profile.targetDate || profile.goalDate || "";
   }
 }
 
-function hideProfileModal() {
-  if (!profileModalBackdrop) return;
+function hideModal() {
   profileModalBackdrop.classList.add("hidden");
 }
 
 async function refreshDashboard(user) {
   const [profile, weightLogs, workoutLogs, foodLogs] = await Promise.all([
     getProfile(user.uid),
-    getWeightLogs(user.uid, 120),
-    getRecentWorkoutLogs(user.uid, 120),
+    getWeightLogs(user.uid, 180),
+    getRecentWorkoutLogs(user.uid, 180),
     getRecentFoodLogs(user.uid, 220)
   ]);
 
-  renderProfileSummary(profile);
-  renderWeightHistory(weightLogs);
-
-  const workoutDays = workoutLogs.filter((log) => Array.isArray(log.completedSteps) && log.completedSteps.length > 0).length;
-  const now = new Date();
-  const oneWeekAgo = new Date(now);
-  oneWeekAgo.setDate(now.getDate() - 7);
-  const mealsThisWeek = foodLogs.filter((entry) => new Date(entry.eatenAt) >= oneWeekAgo).length;
-  const latestWeight = [...weightLogs].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const workoutDays = workoutLogs.filter((x) => (x.completedSteps || []).length > 0).length;
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const mealsThisWeek = foodLogs.filter((x) => new Date(x.eatenAt) >= oneWeekAgo).length;
 
   workoutCountNode.textContent = String(workoutDays);
   foodCountNode.textContent = String(mealsThisWeek);
-  latestWeightNode.textContent = latestWeight ? `${latestWeight.weightKg} kg` : "-";
-  goalEtaNode.textContent = estimateGoalEta(profile, weightLogs);
+  goalEtaNode.textContent = calcEta(profile, weightLogs);
 
-  if (!profileIsComplete(profile)) {
-    showProfileModal(profile);
+  if (weightLogs.length >= 2) {
+    const first = weightLogs[weightLogs.length - 1];
+    const last = weightLogs[0];
+    const diff = Number(last.weightKg) - Number(first.weightKg);
+    weightTrendText.textContent = `Change across sample: ${diff.toFixed(1)} kg`;
   } else {
-    hideProfileModal();
+    weightTrendText.textContent = "Add more weight logs in Profile to unlock trend insights.";
+  }
+
+  renderCharts(weightLogs, workoutLogs, foodLogs);
+
+  if (!profileHasStart(profile)) {
+    showModal(profile);
+  } else {
+    hideModal();
   }
 
   return { profile };
@@ -182,13 +227,15 @@ protectPage((user) => {
     const formData = new FormData(profileModalForm);
     const payload = {
       heightCm: numberOrNull(formData.get("heightCm")),
-      currentWeightKg: numberOrNull(formData.get("currentWeightKg")),
+      startingWeightKg: numberOrNull(formData.get("startingWeightKg")),
+      startingDate: String(formData.get("startingDate") || ""),
       goalWeightKg: numberOrNull(formData.get("goalWeightKg")),
-      goalDate: String(formData.get("goalDate") || "")
+      targetDate: String(formData.get("targetDate") || ""),
+      currentWeightKg: numberOrNull(formData.get("startingWeightKg"))
     };
 
-    if (!payload.heightCm || !payload.currentWeightKg || !payload.goalWeightKg) {
-      setModalStatus("Height, current weight, and goal weight are required.", "alert");
+    if (!payload.heightCm || !payload.startingWeightKg || !payload.startingDate || !payload.goalWeightKg) {
+      setModalStatus("Height, starting weight/date, and goal weight are required.", "alert");
       saveProfileModalBtn.disabled = false;
       return;
     }
@@ -196,46 +243,13 @@ protectPage((user) => {
     try {
       await saveProfile(user.uid, payload);
       setModalStatus("Profile saved.", "success");
+      setStatus("Setup complete.", "success");
       await refreshDashboard(user);
-      setStatus("Profile setup complete.", "success");
     } catch (error) {
       setModalStatus(formatFirebaseError(error), "alert");
+      setStatus(formatFirebaseError(error), "alert");
     } finally {
       saveProfileModalBtn.disabled = false;
-    }
-  });
-
-  weightForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(weightForm);
-    const date = String(formData.get("date") || "");
-    const weightKg = numberOrNull(formData.get("weightKg"));
-    const note = String(formData.get("note") || "").trim();
-    const wantsChart = event.submitter?.value === "chart";
-
-    if (!date || !weightKg) {
-      setStatus("Date and a valid weight are required.", "alert");
-      return;
-    }
-
-    try {
-      setStatus("Saving weight...", "info");
-      await saveDailyWeight(user.uid, date, { date, weightKg, note });
-      await saveProfile(user.uid, { currentWeightKg: weightKg });
-      weightForm.reset();
-      weightDateInput.value = toDateInputValue();
-      setStatus("Weight log saved.", "success");
-
-      weightSaveHint.classList.remove("hidden");
-      weightSaveHint.innerHTML = `Saved. <a href="${buildChartUrl("weight")}">View updated charts</a>.`;
-
-      await refreshDashboard(user);
-
-      if (wantsChart) {
-        window.location.href = buildChartUrl("weight");
-      }
-    } catch (error) {
-      setStatus(formatFirebaseError(error), "alert");
     }
   });
 });

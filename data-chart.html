@@ -31,53 +31,56 @@
     </header>
 
     <section class="hero">
-      <h1>Data chart and trend view</h1>
-      <p>Your charts update automatically from workout, food, weight, and profile logs.</p>
+      <h1>Data chart and trends</h1>
+      <p>Auto-generated from workout, food, and weight logs.</p>
       <p id="status" class="status-line"></p>
       <p id="fromTrackerNotice" class="info hidden" style="margin-top:12px;"></p>
-      <div class="hero-actions">
-        <a class="button ghost" href="./workout-tracker.html">Add workout</a>
-        <a class="button ghost" href="./food-tracker.html">Add food</a>
-        <a class="button ghost" href="./index.html">Add weight</a>
-      </div>
     </section>
 
-    <section class="grid three">
+    <section class="grid two">
       <article class="panel metric">
         <span id="metricConsistency" class="value">-</span>
         <span class="label">30-day workout consistency</span>
       </article>
       <article class="panel metric">
         <span id="metricMealMix" class="value">-</span>
-        <span class="label">Meal mix (low/medium/high)</span>
+        <span class="label">Meal mix low/medium/high</span>
       </article>
-      <article class="panel metric">
-        <span id="metricGoalEta" class="value">-</span>
-        <span class="label">Estimated time to goal</span>
-      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Goal settings (editable here)</h2>
+      <form id="chartGoalForm">
+        <div class="form-row">
+          <label>
+            Goal weight (kg)
+            <input id="chartGoalWeight" name="goalWeightKg" type="number" min="1" step="0.1" required />
+          </label>
+          <label>
+            Target date
+            <input id="chartTargetDate" name="targetDate" type="date" />
+          </label>
+        </div>
+        <div class="hero-actions">
+          <button type="submit" class="primary">Save goal</button>
+          <span id="metricGoalEta" class="badge">ETA: -</span>
+        </div>
+      </form>
     </section>
 
     <section class="chart-grid">
       <article class="panel chart-card">
         <h2>Workout volume</h2>
-        <p class="subtle">Completed workout steps per day (last 30 days).</p>
-        <div style="height:300px;">
-          <canvas id="workoutChart"></canvas>
-        </div>
+        <div style="height:300px; margin-top:8px;"><canvas id="workoutChart"></canvas></div>
       </article>
       <article class="panel chart-card">
         <h2>Food intensity</h2>
-        <p class="subtle">Low/medium/high meals by day (last 30 days).</p>
-        <div style="height:300px;">
-          <canvas id="foodChart"></canvas>
-        </div>
+        <div style="height:300px; margin-top:8px;"><canvas id="foodChart"></canvas></div>
       </article>
       <article class="panel chart-card" style="grid-column: 1 / -1;">
         <h2>Weight trend vs goal</h2>
         <p id="trendNote" class="subtle"></p>
-        <div style="height:320px;">
-          <canvas id="weightChart"></canvas>
-        </div>
+        <div style="height:320px; margin-top:8px;"><canvas id="weightChart"></canvas></div>
       </article>
     </section>
 
@@ -86,10 +89,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Metric</th>
-              <th>Value</th>
-            </tr>
+            <tr><th>Metric</th><th>Value</th></tr>
           </thead>
           <tbody id="summaryBody"></tbody>
         </table>

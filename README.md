@@ -15,9 +15,10 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 ## UX Flow
 
 1. First login shows a required profile setup popup on the Dashboard.
-2. After first save, profile is edited from `profile.html`.
-3. Workout/Food/Daily weight forms support quick date-time presets.
-4. Every tracker save can jump directly to Charts using `Save + open charts`.
+2. Starting weight and starting date are one-time fields (locked after first save).
+3. Goal weight and target date can be edited from both `profile.html` and `data-chart.html`.
+4. Daily weight check-in is in `profile.html` (not Dashboard).
+5. Every tracker save can jump directly to Charts using `Save + open charts`.
 
 ## Firebase Setup
 
@@ -41,7 +42,7 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 ## Data Model
 
 - `users/{uid}/profile/meta`
-  - `heightCm`, `currentWeightKg`, `goalWeightKg`, `goalDate`
+  - `heightCm`, `startingWeightKg`, `startingDate`, `currentWeightKg`, `goalWeightKg`, `targetDate`
 - `users/{uid}/workoutLogs/{YYYY-MM-DD}`
   - `date`, `sessionType`, `completedSteps[]`, `notes`
 - `users/{uid}/foodLogs/{autoId}`

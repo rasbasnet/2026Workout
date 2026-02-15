@@ -39,6 +39,7 @@ export const isFirebaseConfigured = Object.values(firebaseConfig).every(
 let app;
 let auth;
 let db;
+const FIREBASE_TIMEOUT_MS = 12000;
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
@@ -78,8 +79,32 @@ export function formatFirebaseError(error) {
   if (code === "resource-exhausted") {
     return "Firestore quota exceeded. Check Firebase usage limits.";
   }
+  if (code === "timeout") {
+    return "Save request timed out. Confirm Firestore is enabled and rules allow writes for your user.";
+  }
+  if (code === "network-request-failed") {
+    return "Network request failed. Check internet and try again.";
+  }
 
   return String(error?.message || "Unexpected Firebase error.");
+}
+
+async function withTimeout(promise, ms = FIREBASE_TIMEOUT_MS) {
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = window.setTimeout(() => {
+          reject({ code: "timeout" });
+        }, ms);
+      })
+    ]);
+  } finally {
+    if (timer) {
+      window.clearTimeout(timer);
+    }
+  }
 }
 
 export async function loginWithGoogle() {
@@ -121,73 +146,81 @@ function userDoc(uid, subCollection, id) {
 
 export async function saveProfile(uid, payload) {
   ensureConfigured();
-  await setDoc(
-    userDoc(uid, "profile", "meta"),
-    {
-      ...payload,
-      updatedAt: serverTimestamp()
-    },
-    { merge: true }
+  return withTimeout(
+    setDoc(
+      userDoc(uid, "profile", "meta"),
+      {
+        ...payload,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    )
   );
 }
 
 export async function getProfile(uid) {
   ensureConfigured();
-  const snapshot = await getDoc(userDoc(uid, "profile", "meta"));
+  const snapshot = await withTimeout(getDoc(userDoc(uid, "profile", "meta")));
   return snapshot.exists() ? snapshot.data() : null;
 }
 
 export async function saveWorkoutLog(uid, dateKey, payload) {
   ensureConfigured();
-  await setDoc(
-    userDoc(uid, "workoutLogs", dateKey),
-    {
-      ...payload,
-      updatedAt: serverTimestamp()
-    },
-    { merge: true }
+  return withTimeout(
+    setDoc(
+      userDoc(uid, "workoutLogs", dateKey),
+      {
+        ...payload,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    )
   );
 }
 
 export async function getRecentWorkoutLogs(uid, itemLimit = 90) {
   ensureConfigured();
   const q = query(userPath(uid, "workoutLogs"), orderBy("date", "desc"), limit(itemLimit));
-  const snapshot = await getDocs(q);
+  const snapshot = await withTimeout(getDocs(q));
   return snapshot.docs.map((record) => ({ id: record.id, ...record.data() }));
 }
 
 export async function addFoodLog(uid, payload) {
   ensureConfigured();
-  await addDoc(userPath(uid, "foodLogs"), {
-    ...payload,
-    createdAt: serverTimestamp(),
-    eatenAtMs: new Date(payload.eatenAt).getTime()
-  });
+  return withTimeout(
+    addDoc(userPath(uid, "foodLogs"), {
+      ...payload,
+      createdAt: serverTimestamp(),
+      eatenAtMs: new Date(payload.eatenAt).getTime()
+    })
+  );
 }
 
 export async function getRecentFoodLogs(uid, itemLimit = 120) {
   ensureConfigured();
   const q = query(userPath(uid, "foodLogs"), orderBy("eatenAtMs", "desc"), limit(itemLimit));
-  const snapshot = await getDocs(q);
+  const snapshot = await withTimeout(getDocs(q));
   return snapshot.docs.map((record) => ({ id: record.id, ...record.data() }));
 }
 
 export async function saveDailyWeight(uid, dateKey, payload) {
   ensureConfigured();
-  await setDoc(
-    userDoc(uid, "weightLogs", dateKey),
-    {
-      ...payload,
-      updatedAt: serverTimestamp()
-    },
-    { merge: true }
+  return withTimeout(
+    setDoc(
+      userDoc(uid, "weightLogs", dateKey),
+      {
+        ...payload,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    )
   );
 }
 
 export async function getWeightLogs(uid, itemLimit = 180) {
   ensureConfigured();
   const q = query(userPath(uid, "weightLogs"), orderBy("date", "desc"), limit(itemLimit));
-  const snapshot = await getDocs(q);
+  const snapshot = await withTimeout(getDocs(q));
   return snapshot.docs.map((record) => ({ id: record.id, ...record.data() }));
 }
 
