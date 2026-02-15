@@ -2,8 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/fireba
 import {
   getAuth,
   onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
@@ -52,14 +52,10 @@ export function ensureConfigured() {
   }
 }
 
-export async function registerUser(email, password) {
+export async function loginWithGoogle() {
   ensureConfigured();
-  return createUserWithEmailAndPassword(auth, email, password);
-}
-
-export async function loginUser(email, password) {
-  ensureConfigured();
-  return signInWithEmailAndPassword(auth, email, password);
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(auth, provider);
 }
 
 export async function logoutUser() {

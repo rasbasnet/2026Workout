@@ -4,7 +4,7 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 
 ## Pages
 
-- `login.html` - Firebase email/password auth
+- `login.html` - Firebase Google auth
 - `index.html` - Dashboard (profile + daily weight)
 - `routine.html` - Existing routine guide
 - `workout-tracker.html` - Track completed workout steps by day + notes
@@ -14,7 +14,7 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 ## Firebase Setup
 
 1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/).
-2. Enable `Authentication -> Sign-in method -> Email/Password`.
+2. Enable `Authentication -> Sign-in method -> Google`.
 3. Enable Cloud Firestore in production or test mode.
 4. Open `/Users/rasbasnet/Documents/code/2026Workout/js/firebase.js` and replace all `REPLACE_ME` values with your Firebase web app config.
 5. Apply Firestore rules from `/Users/rasbasnet/Documents/code/2026Workout/firestore.rules`.

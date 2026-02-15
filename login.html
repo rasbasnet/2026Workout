@@ -14,42 +14,15 @@
     <section class="auth-card">
       <p class="kicker">Firebase Auth</p>
       <h1>Workout Hub</h1>
-      <p class="subtle">Sign in to track workouts, meals, weight, and analytics.</p>
-
-      <div class="auth-switch">
-        <button id="showLogin" type="button" class="primary">Login</button>
-        <button id="showRegister" type="button" class="secondary">Create account</button>
-      </div>
+      <p class="subtle">Sign in with Google to track workouts, meals, weight, and analytics.</p>
 
       <p id="status"></p>
-
-      <form id="loginForm">
-        <label>
-          Email
-          <input type="email" name="email" autocomplete="email" required />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" autocomplete="current-password" required />
-        </label>
-        <button type="submit" class="primary">Sign in</button>
-      </form>
-
-      <form id="registerForm" class="hidden">
-        <label>
-          Email
-          <input type="email" name="email" autocomplete="email" required />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" autocomplete="new-password" minlength="6" required />
-        </label>
-        <label>
-          Confirm password
-          <input type="password" name="confirmPassword" autocomplete="new-password" minlength="6" required />
-        </label>
-        <button type="submit" class="primary">Create account</button>
-      </form>
+      <button id="googleSignInBtn" type="button" class="primary" style="width: 100%;">
+        Continue with Google
+      </button>
+      <p class="subtle" style="margin-top: 10px;">
+        If this is your first sign-in, your account is created automatically by Firebase.
+      </p>
     </section>
   </main>
 
