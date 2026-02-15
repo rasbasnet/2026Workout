@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workout Hub - Food Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/app.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Workout Hub</span>
+      </div>
+      <nav class="nav-links" aria-label="Main">
+        <a href="./index.html">Dashboard</a>
+        <a href="./routine.html">Routine Guide</a>
+        <a href="./workout-tracker.html">Workout Tracker</a>
+        <a class="active" href="./food-tracker.html">Food Tracker</a>
+        <a href="./data-chart.html">Data Chart</a>
+      </nav>
+      <div class="nav-right">
+        <span id="userChip" class="user-chip">-</span>
+        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+      </div>
+    </header>
+
+    <section class="page-head">
+      <h1>Food tracker</h1>
+      <p>
+        Log meal time, what you ate, calorie intensity (low/medium/high), and notes.
+      </p>
+      <p id="status"></p>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <h2>Log meal</h2>
+        <form id="foodForm">
+          <div class="form-row">
+            <label>
+              Date and time
+              <input id="eatenAt" type="datetime-local" name="eatenAt" required />
+            </label>
+            <label>
+              Calorie level
+              <select id="calorieLevel" name="calorieLevel" required></select>
+            </label>
+          </div>
+
+          <label>
+            Meal details
+            <input type="text" name="meal" placeholder="Example: Rice + chicken + veggies" required />
+          </label>
+
+          <label>
+            Notes
+            <textarea name="notes" placeholder="Portion estimate, cravings, energy, digestion, etc."></textarea>
+          </label>
+
+          <button type="submit" class="primary">Save food log</button>
+        </form>
+      </article>
+
+      <article class="card">
+        <h2>Recent food logs</h2>
+        <ul id="foodHistory" class="list"></ul>
+      </article>
+    </section>
+  </div>
+
+  <script type="module" src="./js/food-tracker.js"></script>
+</body>
+</html>

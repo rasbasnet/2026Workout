@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workout Hub - Data Chart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/app.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Workout Hub</span>
+      </div>
+      <nav class="nav-links" aria-label="Main">
+        <a href="./index.html">Dashboard</a>
+        <a href="./routine.html">Routine Guide</a>
+        <a href="./workout-tracker.html">Workout Tracker</a>
+        <a href="./food-tracker.html">Food Tracker</a>
+        <a class="active" href="./data-chart.html">Data Chart</a>
+      </nav>
+      <div class="nav-right">
+        <span id="userChip" class="user-chip">-</span>
+        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+      </div>
+    </header>
+
+    <section class="page-head">
+      <h1>Data chart and trends</h1>
+      <p>
+        Charts and metrics are generated from your Firebase workout, food, profile, and weight logs.
+      </p>
+      <p id="status"></p>
+    </section>
+
+    <section class="grid three">
+      <article class="card metric">
+        <span id="metricConsistency" class="value">-</span>
+        <span class="label">30-day workout consistency</span>
+      </article>
+      <article class="card metric">
+        <span id="metricMealMix" class="value">-</span>
+        <span class="label">Meal mix (low/medium/high)</span>
+      </article>
+      <article class="card metric">
+        <span id="metricGoalEta" class="value">-</span>
+        <span class="label">Estimated time to goal</span>
+      </article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="card chart-card">
+        <h2>Workout volume</h2>
+        <p class="subtle">Completed steps per day (last 30 days)</p>
+        <div style="height:300px;">
+          <canvas id="workoutChart"></canvas>
+        </div>
+      </article>
+      <article class="card chart-card">
+        <h2>Food intensity</h2>
+        <p class="subtle">Low / medium / high meal count per day</p>
+        <div style="height:300px;">
+          <canvas id="foodChart"></canvas>
+        </div>
+      </article>
+      <article class="card chart-card" style="grid-column: 1 / -1;">
+        <h2>Weight trend vs goal</h2>
+        <p id="trendNote" class="subtle"></p>
+        <div style="height:320px;">
+          <canvas id="weightChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <h2>Data snapshot</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script type="module" src="./js/data-chart.js"></script>
+</body>
+</html>

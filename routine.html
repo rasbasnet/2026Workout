@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Home Calisthenics (WFH Micro + Intensive) — APT + Fascia</title>
+  <style>
+    :root{
+      --bg:#f6f7f8;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e5e7eb;
+      --accent:#0f766e;
+      --accentSoft:rgba(15,118,110,.12);
+      --shadow:0 10px 30px rgba(15, 23, 42, .06);
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{
+      height:100%;
+      min-height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      line-height:1.45;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ max-width:980px; margin:0 auto; padding:28px 18px 60px; }
+
+    header{
+      padding:18px 18px 16px;
+      background:linear-gradient(180deg, #fff, rgba(255,255,255,.6));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    header h1{ margin:0; font-size:22px; letter-spacing:-.02em; }
+    header p{ margin:10px 0 0; color:var(--muted); font-size:14px; }
+
+    .topnav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .pill{
+      padding:8px 12px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:999px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .pill:hover{ border-color:#d1d5db; }
+
+    section.block{
+      margin-top:22px;
+      padding:18px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    section.block h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .routine{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+    }
+    .routine:first-of-type{
+      margin-top:10px;
+      padding-top:0;
+      border-top:none;
+    }
+
+    .routineHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .routineHead h3{
+      margin:0;
+      font-size:16px;
+      letter-spacing:-.01em;
+    }
+    .meta{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      height:fit-content;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px var(--accentSoft);
+      display:inline-block;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      margin-top:12px;
+    }
+    @media (min-width: 900px){
+      .grid{ grid-template-columns: 1.1fr .9fr; align-items:start; }
+    }
+
+    .steps{
+      margin:0;
+      padding-left:18px;
+    }
+    .steps li{
+      margin:10px 0;
+      padding:10px 10px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      list-style-position: outside;
+    }
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .name{
+      font-weight:600;
+      font-size:14px;
+      margin:0;
+    }
+    .note{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    button.play{
+      flex:0 0 auto;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      border-radius:12px;
+      padding:9px 10px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    button.play:hover{
+      border-color:#cbd5e1;
+      background:#fafafa;
+    }
+
+    .player{
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+    .playerTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, #fff, #fafafa);
+    }
+    .now{
+      font-size:13px;
+      color:var(--muted);
+      margin:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 100%;
+    }
+    .iframeWrap{
+      position:relative;
+      width:100%;
+      padding-top:56.25%;
+      background:#000;
+    }
+    iframe{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+    }
+
+    .miniNote{
+      margin:12px 0 0;
+      padding:12px 12px;
+      border:1px dashed var(--border);
+      border-radius:14px;
+      color:var(--muted);
+      font-size:13px;
+      background:#fcfcfc;
+    }
+
+    footer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding:2px 6px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/app.css" />
+</head>
+<body>
+  <div style="max-width:980px; margin:0 auto; padding:16px 18px 0;">
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Workout Hub</span>
+      </div>
+      <nav class="nav-links" aria-label="Main">
+        <a href="./index.html">Dashboard</a>
+        <a class="active" href="./routine.html">Routine Guide</a>
+        <a href="./workout-tracker.html">Workout Tracker</a>
+        <a href="./food-tracker.html">Food Tracker</a>
+        <a href="./data-chart.html">Data Chart</a>
+      </nav>
+      <div class="nav-right">
+        <span id="userChip" class="user-chip">-</span>
+        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+      </div>
+    </div>
+    <p id="status"></p>
+  </div>
+  <div class="wrap">
+    <header>
+      <h1>Home Calisthenics Routine (WFH Micro + Intensive) — APT + Fascia</h1>
+      <p>
+        Built for: <b>home workouts, no equipment (mat only)</b> + focus on <b>anterior pelvic tilt</b> (deep core + glutes + hip flexors)
+        and adding <b>Jason van Blerk fascia</b> as an option.
+      </p>
+      <div class="topnav">
+        <a class="pill" href="#micro">WFH: 10 × 5-min blocks</a>
+        <a class="pill" href="#intensive">Not-home: 2 intensive sessions</a>
+        <a class="pill" href="#notes">APT/Fascia notes</a>
+      </div>
+    </header>
+
+<section class="block" id="micro">
+  <h2>WFH Days — 10 Micro Workouts (Morning → Night, ≈5 minutes each)</h2>
+  <p class="sub">Do these in order from morning to night. Balanced across <b>upper</b>, <b>lower</b>, <b>APT</b> (core/glutes/hip flexors), and <b>fascia/reset</b>. Tap <b>Play</b> to load a form video into that block’s player.</p>
+
+  <!-- Micro 1: Morning Wake-Up -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 1 (Morning) — Wake-Up: Mobility + Breath</h3>
+        <p class="meta">Loosen spine/hips and set a neutral ribs-over-pelvis position.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Cat-Cow</p>
+              <p class="note">60s: move slowly, breathe with the motion.</p>
+            </div>
+            <button class="play" data-target="v-m1" data-title="Cat-Cow" data-video="y39PrKY_4JM">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Open Book (Thoracic Rotation)</p>
+              <p class="note">30–45s/side: rotate from upper back, keep knees stacked.</p>
+            </div>
+            <button class="play" data-target="v-m1" data-title="Open Book" data-video="e71IP2SLrRc">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Standing Trunk Rotations</p>
+              <p class="note">45–60s: gentle rotation, don’t crank low-back.</p>
+            </div>
+            <button class="play" data-target="v-m1" data-title="Standing Trunk Rotations" data-video="9nbO_uTbo9o">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">90/90 Breathing</p>
+              <p class="note">4–6 slow breaths: long exhales, ribs “down”.</p>
+            </div>
+            <button class="play" data-target="v-m1" data-title="90/90 Breathing" data-video="QdkE6Tdgpvk">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m1">Now showing: Cat-Cow</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m1" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/y39PrKY_4JM?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 2: APT Reset -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 2 (AM) — APT Reset: Pelvic Control + Deep Core</h3>
+        <p class="meta">Stop low-back arching early: ribs down, pelvis neutral.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Supine Posterior Pelvic Tilt</p>
+              <p class="note">2×10 reps: flatten low-back to mat, then relax.</p>
+            </div>
+            <button class="play" data-target="v-m2" data-title="Supine Posterior Pelvic Tilt" data-video="Q59R9p4rzxw">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Dead Bug (slow)</p>
+              <p class="note">6–8/side: keep low-back from lifting.</p>
+            </div>
+            <button class="play" data-target="v-m2" data-title="Dead Bug" data-video="4XLEnwUr1d8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bent-Knee Hollow Hold</p>
+              <p class="note">2×20–30s: breathe, don’t strain neck.</p>
+            </div>
+            <button class="play" data-target="v-m2" data-title="Bent-Knee Hollow Hold" data-video="I0SRHFSFIXI">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m2">Now showing: Supine Posterior Pelvic Tilt</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m2" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/Q59R9p4rzxw?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 3: Hip Flexor/Quad -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 3 (Late AM) — Hip Flexor + Quad Opener (APT helper)</h3>
+        <p class="meta">Mobility to counter long sitting; keep glute engaged on the back leg.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Half-Kneeling Hip Flexor Stretch</p>
+              <p class="note">45s/side: slight pelvic tuck, squeeze back glute.</p>
+            </div>
+            <button class="play" data-target="v-m3" data-title="Half-Kneeling Hip Flexor Stretch" data-video="Bfb-9dIWEr4">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Couch Stretch</p>
+              <p class="note">45s/side: don’t over-arch, keep ribs down.</p>
+            </div>
+            <button class="play" data-target="v-m3" data-title="Couch Stretch" data-video="Fg-lwNBzVV8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Glute Bridge (activation)</p>
+              <p class="note">10–15 reps: 1s pause at the top, no low-back crank.</p>
+            </div>
+            <button class="play" data-target="v-m3" data-title="Glute Bridge" data-video="wPM8icPu6H8">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m3">Now showing: Half-Kneeling Hip Flexor Stretch</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m3" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/Bfb-9dIWEr4?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 4: Upper Push Strength -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 4 (Midday) — Upper Body: Push Strength + Scap Control</h3>
+        <p class="meta">Balances the day’s upper body volume (chest/shoulders) without equipment.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Push-Up</p>
+              <p class="note">2 sets: 6–15 reps (knee/incline is fine).</p>
+            </div>
+            <button class="play" data-target="v-m4" data-title="Push-Up" data-video="IODxDxX7oi4">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Pike Push-Up</p>
+              <p class="note">2 sets: 6–12 reps (shoulders). Control tempo.</p>
+            </div>
+            <button class="play" data-target="v-m4" data-title="Pike Push-Up" data-video="RuGjXUHRYSI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Scapular Push-Ups</p>
+              <p class="note">1–2 sets: 10–15 reps (arms straight; move shoulder blades).</p>
+            </div>
+            <button class="play" data-target="v-m4" data-title="Scapular Push-Ups" data-video="5YHZnEsE9hA">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m4">Now showing: Push-Up</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m4" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/IODxDxX7oi4?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 5: Lower Strength -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 5 (Early PM) — Lower Body Strength (Squat/Lunge)</h3>
+        <p class="meta">Leg strength + extra calorie burn; keep torso tall and braced.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bodyweight Squat</p>
+              <p class="note">12–20 reps: brace core, stand tall.</p>
+            </div>
+            <button class="play" data-target="v-m5" data-title="Bodyweight Squat" data-video="nVsWUtN7NXI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Reverse Lunge</p>
+              <p class="note">8–12/side: drive through front heel.</p>
+            </div>
+            <button class="play" data-target="v-m5" data-title="Reverse Lunge" data-video="C_P3Q-PssvY">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Wall Sit</p>
+              <p class="note">45–60s: keep ribs down and breathe.</p>
+            </div>
+            <button class="play" data-target="v-m5" data-title="Wall Sit" data-video="JaZNYM3zAP0">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m5">Now showing: Bodyweight Squat</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m5" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/nVsWUtN7NXI?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 6: Upper Back/Posture -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 6 (Mid PM) — Upper Body: Back/Posture (Pull-Substitute)</h3>
+        <p class="meta">No pulling equipment: strengthen upper back/rear delts and shoulder blades.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Prone Y-T-W Raises</p>
+              <p class="note">6–8 reps each letter (2 rounds if time).</p>
+            </div>
+            <button class="play" data-target="v-m6" data-title="Prone Y-T-W Raises" data-video="QdGTI4Lshg4">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Reverse Snow Angels</p>
+              <p class="note">10–15 reps: keep ribs down, slow control.</p>
+            </div>
+            <button class="play" data-target="v-m6" data-title="Reverse Snow Angels" data-video="0qLP2RNKX4A">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Scapular Push-Ups</p>
+              <p class="note">10–15 reps: protract/retract only (arms straight).</p>
+            </div>
+            <button class="play" data-target="v-m6" data-title="Scapular Push-Ups" data-video="5YHZnEsE9hA">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m6">Now showing: Prone Y-T-W Raises</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m6" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/QdGTI4Lshg4?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 7: Glute/Hamstrings -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 7 (Late PM) — Glutes + Hamstrings (Anti-APT)</h3>
+        <p class="meta">Posterior chain strength so hips stop tipping forward.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Glute Bridge</p>
+              <p class="note">12–20 reps: pause at top, don’t over-arch.</p>
+            </div>
+            <button class="play" data-target="v-m7" data-title="Glute Bridge" data-video="wPM8icPu6H8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Single-Leg Glute Bridge</p>
+              <p class="note">6–12/side: keep pelvis level (slow tempo).</p>
+            </div>
+            <button class="play" data-target="v-m7" data-title="Single-Leg Glute Bridge" data-video="_K_di6h2-Wg">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Hip Hinge Drill</p>
+              <p class="note">10 slow reps: push hips back, neutral spine.</p>
+            </div>
+            <button class="play" data-target="v-m7" data-title="Hip Hinge Drill" data-video="sinpFajtRPw">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m7">Now showing: Glute Bridge</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m7" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/wPM8icPu6H8?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 8: Core Stability -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 8 (Evening) — Core Stability (Hold Neutral)</h3>
+        <p class="meta">Anti-extension + anti-rotation: supports APT correction.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Side Plank</p>
+              <p class="note">30–45s/side: keep ribs stacked, glutes lightly on.</p>
+            </div>
+            <button class="play" data-target="v-m8" data-title="Side Plank" data-video="rCxF2nG9vQ0">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bird Dog</p>
+              <p class="note">6–8/side: slow reach, no low-back arch.</p>
+            </div>
+            <button class="play" data-target="v-m8" data-title="Bird Dog" data-video="ZdAHe9_HeEw">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Forearm Plank</p>
+              <p class="note">30–45s: squeeze glutes, ribs down, breathe.</p>
+            </div>
+            <button class="play" data-target="v-m8" data-title="Forearm Plank" data-video="A2b2EmIg0dA">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m8">Now showing: Side Plank</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m8" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/rCxF2nG9vQ0?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 9: Conditioning -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 9 (Evening) — Sweat Snack (Conditioning)</h3>
+        <p class="meta">5 minutes to raise daily burn: 30s work / 30s easy × 5 rounds.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Mountain Climbers (work interval)</p>
+              <p class="note">30s work. Then 30s easy march/breathe.</p>
+            </div>
+            <button class="play" data-target="v-m9" data-title="Mountain Climbers" data-video="cnyTQDSE884">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">No-Push-Up Burpee (work interval)</p>
+              <p class="note">30s work. Then 30s easy march/breathe.</p>
+            </div>
+            <button class="play" data-target="v-m9" data-title="No-Push-Up Burpee" data-video="HfV1UBKzQTo">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m9">Now showing: Mountain Climbers</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m9" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/cnyTQDSE884?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro 10: Night Fascia -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Micro 10 (Night) — Fascia / Downshift (Jason van Blerk)</h3>
+        <p class="meta">Finish the day with a reset. Do ~5 minutes of the follow-along.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 5 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Fascial Maneuver Stress Reset (short)</p>
+              <p class="note">Press play and follow the first ~5 minutes.</p>
+            </div>
+            <button class="play" data-target="v-m10" data-title="Fascial Maneuver Stress Reset" data-video="eSxwjxLThyA">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Morning Fascia Reset (longer option)</p>
+              <p class="note">Optional longer follow-along (swap in anytime).</p>
+            </div>
+            <button class="play" data-target="v-m10" data-title="Morning Fascia Reset" data-video="ncnVXxdn_Ss">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-m10">Now showing: Fascial Maneuver Stress Reset</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-m10" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/eSxwjxLThyA?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="miniNote">
+    If you’re short on time, the minimum high-value set is: <b>Micro 2</b> (APT core) + <b>Micro 4</b> (upper push) + <b>Micro 5</b> (legs) + <b>Micro 10</b> (fascia/downshift).
+  </p>
+</section>
+
+    <section class="block" id="intensive">
+  <h2>Not-home Days — 2 Intensive Sessions (≈35–45 minutes)</h2>
+  <p class="sub">
+    No equipment (mat only). No pulling. Balanced for <b>upper push</b>, <b>legs</b>, <b>APT correction</b> (core/glutes/hip flexors),
+    plus <b>fascia</b> and <b>posture</b> work (Y-T-W / snow angels).
+  </p>
+
+  <!-- Intensive A -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Intensive A — Strength + Posture + Finisher</h3>
+        <p class="meta">Strength focus, APT-friendly warm-up, posture (pull-substitute), then a short sweat finisher.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 35–45 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Warm-up: Jason fascia reset</p>
+              <p class="note">2–3 min (follow along, easy pace).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Jason fascia reset" data-video="eSxwjxLThyA">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">90/90 Breathing</p>
+              <p class="note">4–6 slow breaths (long exhales, ribs down).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="90/90 Breathing" data-video="QdkE6Tdgpvk">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Supine Posterior Pelvic Tilt</p>
+              <p class="note">2×10 slow reps (flatten low-back then relax).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Supine Posterior Pelvic Tilt" data-video="Q59R9p4rzxw">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Half-Kneeling Hip Flexor Stretch</p>
+              <p class="note">45s/side (squeeze back glute; don’t arch).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Half-Kneeling Hip Flexor Stretch" data-video="Bfb-9dIWEr4">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Glute Bridge (activation)</p>
+              <p class="note">12–15 reps (1s pause; no low-back crank).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Glute Bridge" data-video="wPM8icPu6H8">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name"><b>Strength Circuit</b> (3 rounds)</p>
+              <p class="note">Rest 60–90s after each round.</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Strength Circuit" data-video="IODxDxX7oi4">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Push-Up</p>
+              <p class="note">8–15 reps (incline/knee OK).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Push-Up" data-video="IODxDxX7oi4">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Pike Push-Up</p>
+              <p class="note">6–12 reps (shoulders; controlled).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Pike Push-Up" data-video="RuGjXUHRYSI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bodyweight Squat</p>
+              <p class="note">10–15 reps (3s down).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Bodyweight Squat" data-video="nVsWUtN7NXI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Reverse Lunge</p>
+              <p class="note">8–12/side (steady, heel pressure).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Reverse Lunge" data-video="C_P3Q-PssvY">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Dead Bug</p>
+              <p class="note">8/side (slow; low-back stays down).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Dead Bug" data-video="4XLEnwUr1d8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Prone Y-T-W Raises (posture)</p>
+              <p class="note">6 each shape (smooth, controlled).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Prone Y-T-W Raises" data-video="QdGTI4Lshg4">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name"><b>Finisher</b> (6–8 min)</p>
+              <p class="note">30s on / 30s easy × 6–8 rounds.</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Finisher" data-video="cnyTQDSE884">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Mountain Climbers</p>
+              <p class="note">30s work / 30s easy.</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Mountain Climbers" data-video="cnyTQDSE884">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">No-Push-Up Burpee</p>
+              <p class="note">Alternate with climbers each round.</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="No-Push-Up Burpee" data-video="HfV1UBKzQTo">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Cool-down: Couch Stretch</p>
+              <p class="note">45s/side (don’t arch).</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Couch Stretch" data-video="Fg-lwNBzVV8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Open Book (Thoracic Rotation)</p>
+              <p class="note">30–45s/side.</p>
+            </div>
+            <button class="play" data-target="v-ia" data-title="Open Book" data-video="e71IP2SLrRc">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-ia">Now showing: Jason fascia reset</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-ia" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/eSxwjxLThyA?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intensive B -->
+  <div class="routine" data-routine>
+    <div class="routineHead">
+      <div>
+        <h3>Intensive B — Conditioning + Core/Glutes + Fascia</h3>
+        <p class="meta">Sweat focus, then APT core/glutes + posture work. Low-impact options included.</p>
+      </div>
+      <span class="tag"><span class="dot"></span> 35–45 min</span>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Warm-up: Jason fascia reset</p>
+              <p class="note">2–3 min (easy).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Jason fascia reset" data-video="eSxwjxLThyA">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Cat-Cow</p>
+              <p class="note">45–60s.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Cat-Cow" data-video="y39PrKY_4JM">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Half-Kneeling Hip Flexor Stretch</p>
+              <p class="note">30–45s/side (glute on).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Half-Kneeling Hip Flexor Stretch" data-video="Bfb-9dIWEr4">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name"><b>HIIT Block</b> (20 min)</p>
+              <p class="note">40s work / 20s rest. Do the 4 moves × 5 rounds.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="HIIT Block" data-video="HfV1UBKzQTo">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">No-Push-Up Burpee</p>
+              <p class="note">40s work / 20s rest (step-back = low impact).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="No-Push-Up Burpee" data-video="HfV1UBKzQTo">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Mountain Climbers</p>
+              <p class="note">40s work / 20s rest.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Mountain Climbers" data-video="cnyTQDSE884">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bodyweight Squat</p>
+              <p class="note">40s work / 20s rest (steady pace).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Bodyweight Squat" data-video="nVsWUtN7NXI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Reverse Lunge (alternating)</p>
+              <p class="note">40s work / 20s rest.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Reverse Lunge" data-video="C_P3Q-PssvY">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name"><b>Core + Glutes + Posture</b> (3 rounds)</p>
+              <p class="note">Rest ~30–45s between moves if needed.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Core + Glutes + Posture" data-video="4XLEnwUr1d8">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Dead Bug</p>
+              <p class="note">8/side (slow; ribs down).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Dead Bug" data-video="4XLEnwUr1d8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Glute Bridge</p>
+              <p class="note">15–20 reps (1s pause).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Glute Bridge" data-video="wPM8icPu6H8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Side Plank</p>
+              <p class="note">30–45s/side.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Side Plank" data-video="rCxF2nG9vQ0">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Bent-Knee Hollow Hold</p>
+              <p class="note">20–30s (breathe; don’t arch).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Bent-Knee Hollow Hold" data-video="I0SRHFSFIXI">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Reverse Snow Angels (posture)</p>
+              <p class="note">10–12 reps (slow).</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Reverse Snow Angels" data-video="0qLP2RNKX4A">Play</button>
+          </div>
+        </li>
+
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">Cool-down: Couch Stretch</p>
+              <p class="note">45s/side.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="Couch Stretch" data-video="Fg-lwNBzVV8">Play</button>
+          </div>
+        </li>
+        <li>
+          <div class="row">
+            <div>
+              <p class="name">90/90 Breathing</p>
+              <p class="note">3–5 long exhales.</p>
+            </div>
+            <button class="play" data-target="v-ib" data-title="90/90 Breathing" data-video="QdkE6Tdgpvk">Play</button>
+          </div>
+        </li>
+      </ol>
+
+      <div class="player">
+        <div class="playerTop"><p class="now" id="t-ib">Now showing: Jason fascia reset</p></div>
+        <div class="iframeWrap">
+          <iframe id="v-ib" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            src="https://www.youtube-nocookie.com/embed/eSxwjxLThyA?rel=0&modestbranding=1"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="miniNote">
+    Alternation rule: do <b>Intensive A</b> next time, then <b>Intensive B</b>, repeat.
+    If you’re sore, shorten HIIT to <b>3 rounds</b> and keep form perfect.
+  </p>
+</section>
+
+
+
+    <section class="block" id="notes">
+      <h2>APT + “Fascia” Notes (simple + practical)</h2>
+      <p class="sub">
+        Anterior pelvic tilt is usually improved by combining:
+        <b>deep core control</b> (posterior tilt, dead bug, hollow holds),
+        <b>glute strength</b> (glute bridges, squats, split squats),
+        and <b>hip flexor/quad mobility</b> (half-kneeling + couch stretch).
+      </p>
+      <p class="sub">
+        Fascia routines can be a great “reset” for stiffness/stress. Treat them like a
+        <b>nervous system downshift</b> + mobility, and keep the strength work as the main driver of posture change.
+      </p>
+      <p class="miniNote">
+        GitHub Pages tip: if your videos ever don’t show, try disabling aggressive ad-blockers for that page, then refresh with <span class="kbd">Ctrl</span> + <span class="kbd">F5</span>.
+      </p>
+    </section>
+
+    <footer>
+      Routine guide page for Workout Hub.
+    </footer>
+  </div>
+
+  <script>
+    // Swap routine player video when "Play" is clicked
+    function embedUrl(videoId){
+      return "https://www.youtube-nocookie.com/embed/" + videoId + "?rel=0&modestbranding=1";
+    }
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button.play");
+      if(!btn) return;
+
+      const targetId = btn.getAttribute("data-target");
+      const videoId  = btn.getAttribute("data-video");
+      const title    = btn.getAttribute("data-title") || "Selected video";
+
+      const iframe = document.getElementById(targetId);
+      if(!iframe || !videoId) return;
+
+      iframe.src = embedUrl(videoId);
+
+      const titleEl = document.getElementById("t-" + targetId.split("v-").pop());
+      // For our IDs we named titles as t-m1, t-m2, ... but intensive uses t-a and t-b.
+      // If that heuristic fails, also try exact mapping:
+      if(titleEl){
+        titleEl.textContent = "Now showing: " + title;
+      } else {
+        // fallback: search the nearest .playerTop .now within the same routine
+        const routine = btn.closest("[data-routine]");
+        const now = routine ? routine.querySelector(".playerTop .now") : null;
+        if(now) now.textContent = "Now showing: " + title;
+      }
+    });
+  </script>
+  <script type="module" src="./js/routine-page.js"></script>
+</body>
+</html>
