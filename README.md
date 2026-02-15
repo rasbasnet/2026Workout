@@ -5,11 +5,19 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 ## Pages
 
 - `login.html` - Firebase Google auth
-- `index.html` - Dashboard (profile + daily weight)
-- `routine.html` - Existing routine guide
+- `index.html` - Dashboard (daily weight + metrics)
+- `profile.html` - Edit profile and goal values
+- `routine.html` - Routine guide (video panels can be collapsed for focus mode)
 - `workout-tracker.html` - Track completed workout steps by day + notes
 - `food-tracker.html` - Track meals + time + calorie intensity + notes
 - `data-chart.html` - Auto-generated charts and trend summary
+
+## UX Flow
+
+1. First login shows a required profile setup popup on the Dashboard.
+2. After first save, profile is edited from `profile.html`.
+3. Workout/Food/Daily weight forms support quick date-time presets.
+4. Every tracker save can jump directly to Charts using `Save + open charts`.
 
 ## Firebase Setup
 
@@ -29,7 +37,7 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 - `users/{uid}/workoutLogs/{YYYY-MM-DD}`
   - `date`, `sessionType`, `completedSteps[]`, `notes`
 - `users/{uid}/foodLogs/{autoId}`
-  - `eatenAt`, `eatenAtMs`, `meal`, `calorieLevel`, `notes`
+  - `eatenAt`, `eatenAtMs`, `meal`, `mealType`, `calorieLevel`, `notes`
 - `users/{uid}/weightLogs/{YYYY-MM-DD}`
   - `date`, `weightKg`, `note`
 

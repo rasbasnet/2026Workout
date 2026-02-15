@@ -18,60 +18,86 @@
       </div>
       <nav class="nav-links" aria-label="Main">
         <a href="./index.html">Dashboard</a>
-        <a href="./routine.html">Routine Guide</a>
-        <a class="active" href="./workout-tracker.html">Workout Tracker</a>
-        <a href="./food-tracker.html">Food Tracker</a>
-        <a href="./data-chart.html">Data Chart</a>
+        <a href="./profile.html">Profile</a>
+        <a href="./routine.html">Routine</a>
+        <a class="active" href="./workout-tracker.html">Workout</a>
+        <a href="./food-tracker.html">Food</a>
+        <a href="./data-chart.html">Charts</a>
       </nav>
       <div class="nav-right">
         <span id="userChip" class="user-chip">-</span>
-        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+        <button id="signOutBtn" type="button" class="ghost">Sign out</button>
       </div>
     </header>
 
-    <section class="page-head">
+    <section class="hero">
       <h1>Workout tracker</h1>
-      <p>
-        Select exactly which workout steps you completed on a given day, including mixed WFH and non-WFH days.
-      </p>
-      <p id="status"></p>
+      <p>Pick the day, tap what you completed, and save. This should take less than one minute.</p>
+      <p id="status" class="status-line"></p>
     </section>
 
     <section class="grid two">
-      <article class="card">
-        <h2>Log workout day</h2>
+      <article class="panel">
+        <h2>Log your day</h2>
         <form id="workoutForm">
-          <div class="form-row">
-            <label>
-              Date
-              <input id="workoutDate" type="date" name="date" required />
-            </label>
-            <label>
-              Session type
-              <select name="sessionType">
-                <option value="auto">Auto-detect from selected steps</option>
-                <option value="wfh">WFH</option>
-                <option value="non-wfh">Non-WFH</option>
-                <option value="mixed">Mixed</option>
-              </select>
-            </label>
+          <div class="field">
+            <span>Day</span>
+            <div class="pill-row" id="workoutDatePills">
+              <button type="button" class="choice-pill" data-date-preset="today">Today</button>
+              <button type="button" class="choice-pill" data-date-preset="yesterday">Yesterday</button>
+              <button type="button" class="choice-pill" data-date-preset="clear">Pick manually</button>
+            </div>
+            <input id="workoutDate" type="date" name="date" required />
           </div>
 
-          <label>
-            Completed steps
-            <div id="stepsContainer" class="checkbox-grid"></div>
-          </label>
+          <div class="field">
+            <span>Session type</span>
+            <select name="sessionType" id="sessionType">
+              <option value="auto">Auto-detect</option>
+              <option value="wfh">WFH</option>
+              <option value="non-wfh">Non-WFH</option>
+              <option value="mixed">Mixed</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span>Quick picks</span>
+            <div class="pill-row">
+              <button type="button" class="choice-pill" id="pickFullWfh">Select all WFH micros</button>
+              <button type="button" class="choice-pill" id="pickIntensiveA">Intensive A only</button>
+              <button type="button" class="choice-pill" id="pickIntensiveB">Intensive B only</button>
+              <button type="button" class="choice-pill" id="clearSteps">Clear all</button>
+            </div>
+          </div>
+
+          <div class="step-groups">
+            <section class="step-group">
+              <h3>WFH micro steps</h3>
+              <div id="stepsContainerWfh" class="step-grid"></div>
+            </section>
+            <section class="step-group">
+              <h3>Non-WFH intensive steps</h3>
+              <div id="stepsContainerNonWfh" class="step-grid"></div>
+            </section>
+          </div>
+
+          <p class="callout">Selected steps: <strong id="selectedStepCount">0</strong></p>
 
           <label>
             Notes
-            <textarea name="notes" placeholder="How it felt, skipped steps, substitutions, soreness, etc."></textarea>
+            <textarea name="notes" placeholder="Examples: skipped step 6, did fewer reps, low energy, soreness..."></textarea>
           </label>
 
-          <button type="submit" class="primary">Save workout log</button>
+          <div class="hero-actions">
+            <button type="submit" class="primary">Save workout</button>
+            <button type="submit" class="ghost" name="next" value="chart">Save + open charts</button>
+          </div>
         </form>
+
+        <div id="postSaveHint" class="callout hidden" style="margin-top:10px;"></div>
       </article>
 
-      <article class="card">
+      <article class="panel">
         <h2>Recent workout logs</h2>
         <ul id="workoutHistory" class="list"></ul>
       </article>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workout Hub - Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/app.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Workout Hub</span>
+      </div>
+      <nav class="nav-links" aria-label="Main">
+        <a href="./index.html">Dashboard</a>
+        <a class="active" href="./profile.html">Profile</a>
+        <a href="./routine.html">Routine</a>
+        <a href="./workout-tracker.html">Workout</a>
+        <a href="./food-tracker.html">Food</a>
+        <a href="./data-chart.html">Charts</a>
+      </nav>
+      <div class="nav-right">
+        <span id="userChip" class="user-chip">-</span>
+        <button id="signOutBtn" type="button" class="ghost">Sign out</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Profile and goal setup</h1>
+      <p>Edit your physical stats and goal values any time from here.</p>
+      <p id="status" class="status-line"></p>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Profile details</h2>
+        <form id="profileForm">
+          <div class="form-row">
+            <label>
+              Height (cm)
+              <input type="number" name="heightCm" min="1" step="0.1" required />
+            </label>
+            <label>
+              Current weight (kg)
+              <input type="number" name="currentWeightKg" min="1" step="0.1" required />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Goal weight (kg)
+              <input type="number" name="goalWeightKg" min="1" step="0.1" required />
+            </label>
+            <label>
+              Target date (optional)
+              <input type="date" name="goalDate" />
+            </label>
+          </div>
+          <button type="submit" class="primary">Save profile</button>
+        </form>
+      </article>
+
+      <article class="panel">
+        <h2>How this is used</h2>
+        <p>
+          Charts and estimated time-to-goal rely on these fields. Keep current weight updated by logging daily weight on Dashboard.
+        </p>
+        <div class="quick-links" style="margin-top:12px;">
+          <a href="./index.html"><span>Dashboard</span><span>Daily weight check-in</span></a>
+          <a href="./data-chart.html"><span>Data chart</span><span>View trend and ETA</span></a>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script type="module" src="./js/profile.js"></script>
+</body>
+</html>

@@ -18,77 +18,54 @@
       </div>
       <nav class="nav-links" aria-label="Main">
         <a class="active" href="./index.html">Dashboard</a>
-        <a href="./routine.html">Routine Guide</a>
-        <a href="./workout-tracker.html">Workout Tracker</a>
-        <a href="./food-tracker.html">Food Tracker</a>
-        <a href="./data-chart.html">Data Chart</a>
+        <a href="./profile.html">Profile</a>
+        <a href="./routine.html">Routine</a>
+        <a href="./workout-tracker.html">Workout</a>
+        <a href="./food-tracker.html">Food</a>
+        <a href="./data-chart.html">Charts</a>
       </nav>
       <div class="nav-right">
         <span id="userChip" class="user-chip">-</span>
-        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+        <button id="signOutBtn" type="button" class="ghost">Sign out</button>
       </div>
     </header>
 
-    <section class="page-head">
-      <h1>Your training cockpit</h1>
+    <section class="hero">
+      <h1>Simple daily flow: log workout, log food, watch trends.</h1>
       <p>
-        Save your profile, log daily weight, and use the tracker pages for workout and food entries.
-        Charts are generated from Firebase data.
+        This dashboard is now focused on quick check-in and daily weight. Profile setup is handled once in a popup and can be edited later from Profile.
       </p>
-      <p id="status"></p>
+      <div class="hero-actions">
+        <a class="button primary" href="./workout-tracker.html">Log Workout</a>
+        <a class="button ghost" href="./food-tracker.html">Log Food</a>
+        <a class="button ghost" href="./data-chart.html">Open Charts</a>
+      </div>
+      <p id="status" class="status-line"></p>
     </section>
 
     <section class="grid three">
-      <article class="card metric">
+      <article class="panel metric">
         <span class="value" id="metricWorkoutDays">0</span>
         <span class="label">Workout days logged</span>
       </article>
-      <article class="card metric">
+      <article class="panel metric">
         <span class="value" id="metricMealsWeek">0</span>
-        <span class="label">Meals logged this week</span>
+        <span class="label">Meals this week</span>
       </article>
-      <article class="card metric">
+      <article class="panel metric">
         <span class="value" id="metricLatestWeight">-</span>
         <span class="label">Latest weight</span>
       </article>
     </section>
 
-    <section class="grid two">
-      <article class="card">
-        <h2>Profile</h2>
-        <p>This data is used for trend analysis and goal ETA.</p>
-        <form id="profileForm">
-          <div class="form-row">
-            <label>
-              Height (cm)
-              <input type="number" name="heightCm" min="1" step="0.1" required />
-            </label>
-            <label>
-              Current weight (kg)
-              <input type="number" name="currentWeightKg" min="1" step="0.1" required />
-            </label>
-          </div>
-          <div class="form-row">
-            <label>
-              Goal weight (kg)
-              <input type="number" name="goalWeightKg" min="1" step="0.1" required />
-            </label>
-            <label>
-              Goal date (optional)
-              <input type="date" name="goalDate" />
-            </label>
-          </div>
-          <button type="submit" class="primary">Save profile</button>
-        </form>
-      </article>
-
-      <article class="card">
-        <h2>Daily weight log</h2>
-        <p>Track weight every day to improve chart quality and ETA forecasting.</p>
+    <section class="split">
+      <article class="panel">
+        <h2>Daily weight check-in</h2>
+        <p>Log weight daily. This drives your trend quality and ETA.</p>
         <form id="weightForm">
           <div class="form-row">
             <label>
-              Date
+              Day
               <input id="weightDate" type="date" name="date" required />
             </label>
             <label>
@@ -97,26 +74,81 @@
             </label>
           </div>
           <label>
-            Notes
-            <textarea name="note" placeholder="Energy, sleep, soreness, etc."></textarea>
+            Notes (optional)
+            <textarea name="note" placeholder="Sleep, soreness, hydration, stress..."></textarea>
           </label>
-          <button type="submit" class="primary">Save weight</button>
+          <div class="hero-actions">
+            <button type="submit" class="primary">Save Weight</button>
+            <button type="submit" class="ghost" name="next" value="chart">Save + Open Charts</button>
+          </div>
         </form>
+        <div id="weightSaveHint" class="callout hidden" style="margin-top:10px;"></div>
+      </article>
 
-        <h3 style="margin-top:16px">Recent weight entries</h3>
+      <article class="panel">
+        <h2>Profile snapshot</h2>
+        <p id="profileSummary" class="subtle">Profile not set yet.</p>
+        <div class="hero-actions">
+          <a class="button ghost" href="./profile.html">Open Profile</a>
+        </div>
+        <h3 style="margin-top:12px;">Recent weight logs</h3>
         <ul id="weightHistory" class="list"></ul>
       </article>
     </section>
 
-    <section class="card" style="margin-top:14px;">
-      <h2>Goal estimate</h2>
-      <p>
-        <strong id="metricGoalEta">Need more data</strong>
-      </p>
-      <p class="subtle">
-        ETA is estimated from your recent weight trend and current goal. It gets better as you log more days.
-      </p>
+    <section class="grid two">
+      <article class="panel">
+        <h3>Goal estimate</h3>
+        <p><strong id="metricGoalEta">Need more data</strong></p>
+        <p class="subtle">Based on current trend and goal weight.</p>
+      </article>
+      <article class="panel quick-links">
+        <a href="./workout-tracker.html">
+          <span>Workout tracker</span>
+          <span>Record steps and notes</span>
+        </a>
+        <a href="./food-tracker.html">
+          <span>Food tracker</span>
+          <span>Track meals by calorie level</span>
+        </a>
+        <a href="./data-chart.html">
+          <span>Data chart</span>
+          <span>Visual trends and weekly momentum</span>
+        </a>
+      </article>
     </section>
+  </div>
+
+  <div id="profileModalBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal">
+      <p class="kicker">First-time setup</p>
+      <h2 id="profileModalTitle">Set up your profile</h2>
+      <p>Do this once so dashboard and charts can estimate progress correctly.</p>
+      <form id="profileModalForm" style="margin-top:12px;">
+        <div class="form-row">
+          <label>
+            Height (cm)
+            <input type="number" name="heightCm" min="1" step="0.1" required />
+          </label>
+          <label>
+            Current weight (kg)
+            <input type="number" name="currentWeightKg" min="1" step="0.1" required />
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            Goal weight (kg)
+            <input type="number" name="goalWeightKg" min="1" step="0.1" required />
+          </label>
+          <label>
+            Target date (optional)
+            <input type="date" name="goalDate" />
+          </label>
+        </div>
+        <button id="saveProfileModalBtn" type="submit" class="primary">Save Profile</button>
+      </form>
+      <p id="profileModalStatus" class="status-line"></p>
+    </div>
   </div>
 
   <script type="module" src="./js/dashboard.js"></script>

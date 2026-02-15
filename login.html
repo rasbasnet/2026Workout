@@ -12,17 +12,16 @@
 <body>
   <main class="auth-wrap">
     <section class="auth-card">
-      <p class="kicker">Firebase Auth</p>
+      <p class="kicker">Firebase Google Auth</p>
       <h1>Workout Hub</h1>
-      <p class="subtle">Sign in with Google to track workouts, meals, weight, and analytics.</p>
-
-      <p id="status"></p>
-      <button id="googleSignInBtn" type="button" class="primary" style="width: 100%;">
+      <p class="subtle">Sign in with Google to use trackers, profile, and analytics.</p>
+      <button id="googleSignInBtn" type="button" class="primary" style="width:100%; margin-top:14px;">
         Continue with Google
       </button>
-      <p class="subtle" style="margin-top: 10px;">
-        If this is your first sign-in, your account is created automatically by Firebase.
-      </p>
+      <p id="status" class="status-line"></p>
+      <div class="callout" style="margin-top:12px;">
+        If sign-in fails on GitHub Pages, ensure <strong>rasbasnet.github.io</strong> is in Firebase Auth authorized domains.
+      </div>
     </section>
   </main>
 

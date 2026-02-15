@@ -18,55 +18,76 @@
       </div>
       <nav class="nav-links" aria-label="Main">
         <a href="./index.html">Dashboard</a>
-        <a href="./routine.html">Routine Guide</a>
-        <a href="./workout-tracker.html">Workout Tracker</a>
-        <a class="active" href="./food-tracker.html">Food Tracker</a>
-        <a href="./data-chart.html">Data Chart</a>
+        <a href="./profile.html">Profile</a>
+        <a href="./routine.html">Routine</a>
+        <a href="./workout-tracker.html">Workout</a>
+        <a class="active" href="./food-tracker.html">Food</a>
+        <a href="./data-chart.html">Charts</a>
       </nav>
       <div class="nav-right">
         <span id="userChip" class="user-chip">-</span>
-        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+        <button id="signOutBtn" type="button" class="ghost">Sign out</button>
       </div>
     </header>
 
-    <section class="page-head">
+    <section class="hero">
       <h1>Food tracker</h1>
-      <p>
-        Log meal time, what you ate, calorie intensity (low/medium/high), and notes.
-      </p>
-      <p id="status"></p>
+      <p>Log what you ate and roughly how calorie-heavy it was. Use quick time buttons to move faster.</p>
+      <p id="status" class="status-line"></p>
     </section>
 
     <section class="grid two">
-      <article class="card">
+      <article class="panel">
         <h2>Log meal</h2>
         <form id="foodForm">
+          <div class="field">
+            <span>When did you eat?</span>
+            <div class="pill-row" id="foodTimePills">
+              <button type="button" class="choice-pill" data-time-preset="now">Now</button>
+              <button type="button" class="choice-pill" data-time-preset="1h">1 hour ago</button>
+              <button type="button" class="choice-pill" data-time-preset="3h">3 hours ago</button>
+              <button type="button" class="choice-pill" data-time-preset="manual">Pick manually</button>
+            </div>
+            <input id="eatenAt" type="datetime-local" name="eatenAt" required />
+          </div>
+
           <div class="form-row">
-            <label>
-              Date and time
-              <input id="eatenAt" type="datetime-local" name="eatenAt" required />
-            </label>
             <label>
               Calorie level
               <select id="calorieLevel" name="calorieLevel" required></select>
             </label>
+            <label>
+              Meal type (optional)
+              <select name="mealType">
+                <option value="">Not set</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+              </select>
+            </label>
           </div>
 
           <label>
-            Meal details
-            <input type="text" name="meal" placeholder="Example: Rice + chicken + veggies" required />
+            What did you eat?
+            <input type="text" name="meal" placeholder="Example: rice, dal, chicken, salad" required />
           </label>
 
           <label>
             Notes
-            <textarea name="notes" placeholder="Portion estimate, cravings, energy, digestion, etc."></textarea>
+            <textarea name="notes" placeholder="Hunger level, portion rough estimate, digestion, mood, etc."></textarea>
           </label>
 
-          <button type="submit" class="primary">Save food log</button>
+          <div class="hero-actions">
+            <button type="submit" class="primary">Save food log</button>
+            <button type="submit" class="ghost" name="next" value="chart">Save + open charts</button>
+          </div>
         </form>
+
+        <div id="postSaveHint" class="callout hidden" style="margin-top:10px;"></div>
       </article>
 
-      <article class="card">
+      <article class="panel">
         <h2>Recent food logs</h2>
         <ul id="foodHistory" class="list"></ul>
       </article>

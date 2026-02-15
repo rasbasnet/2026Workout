@@ -18,56 +18,61 @@
       </div>
       <nav class="nav-links" aria-label="Main">
         <a href="./index.html">Dashboard</a>
-        <a href="./routine.html">Routine Guide</a>
-        <a href="./workout-tracker.html">Workout Tracker</a>
-        <a href="./food-tracker.html">Food Tracker</a>
-        <a class="active" href="./data-chart.html">Data Chart</a>
+        <a href="./profile.html">Profile</a>
+        <a href="./routine.html">Routine</a>
+        <a href="./workout-tracker.html">Workout</a>
+        <a href="./food-tracker.html">Food</a>
+        <a class="active" href="./data-chart.html">Charts</a>
       </nav>
       <div class="nav-right">
         <span id="userChip" class="user-chip">-</span>
-        <button id="signOutBtn" type="button" class="secondary">Sign out</button>
+        <button id="signOutBtn" type="button" class="ghost">Sign out</button>
       </div>
     </header>
 
-    <section class="page-head">
-      <h1>Data chart and trends</h1>
-      <p>
-        Charts and metrics are generated from your Firebase workout, food, profile, and weight logs.
-      </p>
-      <p id="status"></p>
+    <section class="hero">
+      <h1>Data chart and trend view</h1>
+      <p>Your charts update automatically from workout, food, weight, and profile logs.</p>
+      <p id="status" class="status-line"></p>
+      <p id="fromTrackerNotice" class="info hidden" style="margin-top:12px;"></p>
+      <div class="hero-actions">
+        <a class="button ghost" href="./workout-tracker.html">Add workout</a>
+        <a class="button ghost" href="./food-tracker.html">Add food</a>
+        <a class="button ghost" href="./index.html">Add weight</a>
+      </div>
     </section>
 
     <section class="grid three">
-      <article class="card metric">
+      <article class="panel metric">
         <span id="metricConsistency" class="value">-</span>
         <span class="label">30-day workout consistency</span>
       </article>
-      <article class="card metric">
+      <article class="panel metric">
         <span id="metricMealMix" class="value">-</span>
         <span class="label">Meal mix (low/medium/high)</span>
       </article>
-      <article class="card metric">
+      <article class="panel metric">
         <span id="metricGoalEta" class="value">-</span>
         <span class="label">Estimated time to goal</span>
       </article>
     </section>
 
     <section class="chart-grid">
-      <article class="card chart-card">
+      <article class="panel chart-card">
         <h2>Workout volume</h2>
-        <p class="subtle">Completed steps per day (last 30 days)</p>
+        <p class="subtle">Completed workout steps per day (last 30 days).</p>
         <div style="height:300px;">
           <canvas id="workoutChart"></canvas>
         </div>
       </article>
-      <article class="card chart-card">
+      <article class="panel chart-card">
         <h2>Food intensity</h2>
-        <p class="subtle">Low / medium / high meal count per day</p>
+        <p class="subtle">Low/medium/high meals by day (last 30 days).</p>
         <div style="height:300px;">
           <canvas id="foodChart"></canvas>
         </div>
       </article>
-      <article class="card chart-card" style="grid-column: 1 / -1;">
+      <article class="panel chart-card" style="grid-column: 1 / -1;">
         <h2>Weight trend vs goal</h2>
         <p id="trendNote" class="subtle"></p>
         <div style="height:320px;">
@@ -76,17 +81,19 @@
       </article>
     </section>
 
-    <section class="card" style="margin-top:14px;">
+    <section class="panel" style="margin-top:14px;">
       <h2>Data snapshot</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody id="summaryBody"></tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
     </section>
   </div>
 

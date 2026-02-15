@@ -15,10 +15,26 @@ const trendNote = document.getElementById("trendNote");
 const metricGoalEta = document.getElementById("metricGoalEta");
 const metricConsistency = document.getElementById("metricConsistency");
 const metricMealMix = document.getElementById("metricMealMix");
+const fromTrackerNotice = document.getElementById("fromTrackerNotice");
 
 let workoutChart;
 let foodChart;
 let weightChart;
+
+function getFlowLabel() {
+  const from = new URLSearchParams(window.location.search).get("from") || "";
+  if (from === "workout") return "Workout log saved. Charts now include your latest workout data.";
+  if (from === "food") return "Food log saved. Charts now include your latest meal entry.";
+  if (from === "weight") return "Weight log saved. Weight trend and ETA have been updated.";
+  return "";
+}
+
+function renderFlowNotice() {
+  const text = getFlowLabel();
+  if (!text) return;
+  fromTrackerNotice.classList.remove("hidden");
+  fromTrackerNotice.textContent = text;
+}
 
 function lastNDates(days) {
   const labels = [];
@@ -142,11 +158,11 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
       labels: workoutSeries.labels,
       datasets: [
         {
-          label: "Completed workout steps per day",
+          label: "Steps completed",
           data: workoutSeries.steps,
-          tension: 0.3,
-          borderColor: "#0b8a6f",
-          backgroundColor: "rgba(11, 138, 111, 0.18)",
+          tension: 0.34,
+          borderColor: "#0c8ce9",
+          backgroundColor: "rgba(12, 140, 233, 0.2)",
           fill: true,
           pointRadius: 2
         }
@@ -163,21 +179,9 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
     data: {
       labels: foodSeries.labels,
       datasets: [
-        {
-          label: "Low",
-          data: foodSeries.low,
-          backgroundColor: "#7ac7a8"
-        },
-        {
-          label: "Medium",
-          data: foodSeries.medium,
-          backgroundColor: "#f5c26a"
-        },
-        {
-          label: "High",
-          data: foodSeries.high,
-          backgroundColor: "#f0835f"
-        }
+        { label: "Low", data: foodSeries.low, backgroundColor: "#57b583" },
+        { label: "Medium", data: foodSeries.medium, backgroundColor: "#f6b53f" },
+        { label: "High", data: foodSeries.high, backgroundColor: "#ef7f58" }
       ]
     },
     options: {
@@ -198,16 +202,16 @@ function renderCharts(profile, workoutLogs, foodLogs, weightLogs) {
         {
           label: "Weight (kg)",
           data: weightSeries.values,
-          borderColor: "#0d6a8f",
-          backgroundColor: "rgba(13, 106, 143, 0.13)",
-          tension: 0.25,
+          borderColor: "#0c8ce9",
+          backgroundColor: "rgba(12, 140, 233, 0.16)",
+          tension: 0.3,
           fill: true
         },
         {
           label: "Goal",
           data: weightSeries.goal,
-          borderColor: "#e96f2f",
-          borderDash: [8, 4],
+          borderColor: "#e5822e",
+          borderDash: [7, 5],
           pointRadius: 0,
           tension: 0
         }
@@ -232,11 +236,11 @@ function renderSummary(profile, workoutLogs, foodLogs, weightLogs) {
 
   trendNote.textContent =
     slope === 0
-      ? "Weight trend is flat over the current sample window."
-      : `Weight trend: ${slope.toFixed(3)} kg/day over your recent logs.`;
+      ? "Weight trend is currently flat across your latest data window."
+      : `Weight trend: ${slope.toFixed(3)} kg/day based on your latest logs.`;
 
   const rows = [
-    ["Profile Height", profile?.heightCm ? `${profile.heightCm} cm` : "Not set"],
+    ["Height", profile?.heightCm ? `${profile.heightCm} cm` : "Not set"],
     ["Current Weight", profile?.currentWeightKg ? `${profile.currentWeightKg} kg` : "Not set"],
     ["Goal Weight", profile?.goalWeightKg ? `${profile.goalWeightKg} kg` : "Not set"],
     ["Goal Date", profile?.goalDate || "Not set"],
@@ -269,8 +273,13 @@ async function loadCharts(user) {
   renderSummary(profile, workoutLogs, foodLogs, weightLogs);
 }
 
+let initialized = false;
+
 protectPage((user) => {
+  if (initialized) return;
+  initialized = true;
   wireGlobalActions();
+  renderFlowNotice();
 
   const refresh = async () => {
     try {

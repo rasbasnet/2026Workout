@@ -8,18 +8,42 @@ import {
   getRecentWorkoutLogs,
   getRecentFoodLogs
 } from "./firebase.js";
-import { toDateInputValue, formatDate } from "./utils.js";
+import {
+  toDateInputValue,
+  formatDate,
+  numberOrNull,
+  buildChartUrl,
+  escapeHtml
+} from "./utils.js";
 
-const profileForm = document.getElementById("profileForm");
 const weightForm = document.getElementById("weightForm");
 const weightDateInput = document.getElementById("weightDate");
 const weightHistory = document.getElementById("weightHistory");
+const profileSummary = document.getElementById("profileSummary");
+const weightSaveHint = document.getElementById("weightSaveHint");
 const workoutCountNode = document.getElementById("metricWorkoutDays");
 const foodCountNode = document.getElementById("metricMealsWeek");
 const latestWeightNode = document.getElementById("metricLatestWeight");
 const goalEtaNode = document.getElementById("metricGoalEta");
 
+const profileModalBackdrop = document.getElementById("profileModalBackdrop");
+const profileModalForm = document.getElementById("profileModalForm");
+const profileModalStatus = document.getElementById("profileModalStatus");
+const saveProfileModalBtn = document.getElementById("saveProfileModalBtn");
+
 weightDateInput.value = toDateInputValue();
+
+function setModalStatus(message = "", type = "") {
+  if (!profileModalStatus) return;
+  profileModalStatus.textContent = message;
+  profileModalStatus.className = type;
+}
+
+function profileIsComplete(profile) {
+  return Boolean(
+    profile && numberOrNull(profile.heightCm) && numberOrNull(profile.currentWeightKg) && numberOrNull(profile.goalWeightKg)
+  );
+}
 
 function slopePerDay(items) {
   if (items.length < 2) return 0;
@@ -31,19 +55,20 @@ function slopePerDay(items) {
 }
 
 function estimateGoalEta(profile, weightLogs) {
-  if (!profile?.goalWeightKg || weightLogs.length < 2) return "Need more data";
+  if (!profile?.goalWeightKg || weightLogs.length < 2) return "Need more weight logs";
   const latest = [...weightLogs].sort((a, b) => b.date.localeCompare(a.date))[0];
-  const slope = slopePerDay(weightLogs.slice(0, 21));
+  const slope = slopePerDay(weightLogs.slice(0, 30));
   const distance = Number(profile.goalWeightKg) - Number(latest.weightKg);
 
   if (distance === 0) return "Goal reached";
-  if (slope === 0) return "No trend yet";
+  if (slope === 0) return "Flat trend";
 
-  const trendHelps = distance > 0 ? slope > 0 : slope < 0;
-  if (!trendHelps) return "Current trend moves away";
+  const towardGoal = distance > 0 ? slope > 0 : slope < 0;
+  if (!towardGoal) return "Current trend is away from goal";
 
   const days = Math.ceil(Math.abs(distance / slope));
-  if (!Number.isFinite(days) || days > 3650) return "Not enough stable data";
+  if (!Number.isFinite(days) || days > 3650) return "Need more stable data";
+
   const eta = new Date();
   eta.setDate(eta.getDate() + days);
   return `${days} days (${eta.toLocaleDateString()})`;
@@ -55,45 +80,68 @@ function renderWeightHistory(items) {
     return;
   }
 
-  const top = [...items]
+  weightHistory.innerHTML = [...items]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 8)
     .map(
       (item) => `
         <li class="list-item">
-          <div class="head">
+          <div class="item-head">
             <span>${formatDate(item.date)}</span>
             <span>${item.weightKg} kg</span>
           </div>
-          ${item.note ? `<p class="subtle">${item.note}</p>` : ""}
+          ${item.note ? `<p class="inline-note">${escapeHtml(item.note)}</p>` : ""}
         </li>
       `
     )
     .join("");
+}
 
-  weightHistory.innerHTML = top;
+function renderProfileSummary(profile) {
+  if (!profile) {
+    profileSummary.textContent = "Profile not set yet.";
+    return;
+  }
+
+  const pieces = [
+    profile.heightCm ? `Height ${profile.heightCm} cm` : null,
+    profile.currentWeightKg ? `Current ${profile.currentWeightKg} kg` : null,
+    profile.goalWeightKg ? `Goal ${profile.goalWeightKg} kg` : null,
+    profile.goalDate ? `Target ${profile.goalDate}` : null
+  ].filter(Boolean);
+
+  profileSummary.textContent = pieces.length ? pieces.join(" | ") : "Profile partially set.";
+}
+
+function showProfileModal(profile = null) {
+  if (!profileModalBackdrop) return;
+  profileModalBackdrop.classList.remove("hidden");
+
+  if (profile) {
+    profileModalForm.heightCm.value = profile.heightCm || "";
+    profileModalForm.currentWeightKg.value = profile.currentWeightKg || "";
+    profileModalForm.goalWeightKg.value = profile.goalWeightKg || "";
+    profileModalForm.goalDate.value = profile.goalDate || "";
+  }
+}
+
+function hideProfileModal() {
+  if (!profileModalBackdrop) return;
+  profileModalBackdrop.classList.add("hidden");
 }
 
 async function refreshDashboard(user) {
   const [profile, weightLogs, workoutLogs, foodLogs] = await Promise.all([
     getProfile(user.uid),
-    getWeightLogs(user.uid, 90),
-    getRecentWorkoutLogs(user.uid, 90),
-    getRecentFoodLogs(user.uid, 200)
+    getWeightLogs(user.uid, 120),
+    getRecentWorkoutLogs(user.uid, 120),
+    getRecentFoodLogs(user.uid, 220)
   ]);
 
-  if (profile) {
-    profileForm.heightCm.value = profile.heightCm || "";
-    profileForm.currentWeightKg.value = profile.currentWeightKg || "";
-    profileForm.goalWeightKg.value = profile.goalWeightKg || "";
-    profileForm.goalDate.value = profile.goalDate || "";
-  }
-
+  renderProfileSummary(profile);
   renderWeightHistory(weightLogs);
 
-  const workoutDays = workoutLogs.filter((log) => Array.isArray(log.completedSteps) && log.completedSteps.length > 0)
-    .length;
-
+  const workoutDays = workoutLogs.filter((log) => Array.isArray(log.completedSteps) && log.completedSteps.length > 0).length;
   const now = new Date();
   const oneWeekAgo = new Date(now);
   oneWeekAgo.setDate(now.getDate() - 7);
@@ -104,32 +152,55 @@ async function refreshDashboard(user) {
   foodCountNode.textContent = String(mealsThisWeek);
   latestWeightNode.textContent = latestWeight ? `${latestWeight.weightKg} kg` : "-";
   goalEtaNode.textContent = estimateGoalEta(profile, weightLogs);
+
+  if (!profileIsComplete(profile)) {
+    showProfileModal(profile);
+  } else {
+    hideProfileModal();
+  }
+
+  return { profile };
 }
 
+let initialized = false;
+
 protectPage((user) => {
+  if (initialized) return;
+  initialized = true;
   wireGlobalActions();
 
   refreshDashboard(user).catch((error) => {
     setStatus(error.message || "Unable to load dashboard data.", "alert");
   });
 
-  profileForm.addEventListener("submit", async (event) => {
+  profileModalForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const formData = new FormData(profileForm);
+    setModalStatus("");
+    saveProfileModalBtn.disabled = true;
 
+    const formData = new FormData(profileModalForm);
     const payload = {
-      heightCm: Number(formData.get("heightCm") || 0),
-      currentWeightKg: Number(formData.get("currentWeightKg") || 0),
-      goalWeightKg: Number(formData.get("goalWeightKg") || 0),
+      heightCm: numberOrNull(formData.get("heightCm")),
+      currentWeightKg: numberOrNull(formData.get("currentWeightKg")),
+      goalWeightKg: numberOrNull(formData.get("goalWeightKg")),
       goalDate: String(formData.get("goalDate") || "")
     };
 
+    if (!payload.heightCm || !payload.currentWeightKg || !payload.goalWeightKg) {
+      setModalStatus("Height, current weight, and goal weight are required.", "alert");
+      saveProfileModalBtn.disabled = false;
+      return;
+    }
+
     try {
       await saveProfile(user.uid, payload);
-      setStatus("Profile saved.", "success");
+      setModalStatus("Profile saved.", "success");
       await refreshDashboard(user);
+      setStatus("Profile setup complete.", "success");
     } catch (error) {
-      setStatus(error.message || "Could not save profile.", "alert");
+      setModalStatus(error.message || "Could not save profile.", "alert");
+    } finally {
+      saveProfileModalBtn.disabled = false;
     }
   });
 
@@ -137,11 +208,12 @@ protectPage((user) => {
     event.preventDefault();
     const formData = new FormData(weightForm);
     const date = String(formData.get("date") || "");
-    const weightKg = Number(formData.get("weightKg") || 0);
+    const weightKg = numberOrNull(formData.get("weightKg"));
     const note = String(formData.get("note") || "").trim();
+    const wantsChart = event.submitter?.value === "chart";
 
     if (!date || !weightKg) {
-      setStatus("Date and weight are required.", "alert");
+      setStatus("Date and a valid weight are required.", "alert");
       return;
     }
 
@@ -151,7 +223,15 @@ protectPage((user) => {
       weightForm.reset();
       weightDateInput.value = toDateInputValue();
       setStatus("Weight log saved.", "success");
+
+      weightSaveHint.classList.remove("hidden");
+      weightSaveHint.innerHTML = `Saved. <a href="${buildChartUrl("weight")}">View updated charts</a>.`;
+
       await refreshDashboard(user);
+
+      if (wantsChart) {
+        window.location.href = buildChartUrl("weight");
+      }
     } catch (error) {
       setStatus(error.message || "Could not save weight log.", "alert");
     }
