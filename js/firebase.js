@@ -4,6 +4,8 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
@@ -55,7 +57,20 @@ export function ensureConfigured() {
 export async function loginWithGoogle() {
   ensureConfigured();
   const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
   return signInWithPopup(auth, provider);
+}
+
+export async function loginWithGoogleRedirect() {
+  ensureConfigured();
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  return signInWithRedirect(auth, provider);
+}
+
+export async function resolveGoogleRedirect() {
+  ensureConfigured();
+  return getRedirectResult(auth);
 }
 
 export async function logoutUser() {

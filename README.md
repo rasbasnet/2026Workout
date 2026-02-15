@@ -18,6 +18,9 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
 3. Enable Cloud Firestore in production or test mode.
 4. Open `/Users/rasbasnet/Documents/code/2026Workout/js/firebase.js` and replace all `REPLACE_ME` values with your Firebase web app config.
 5. Apply Firestore rules from `/Users/rasbasnet/Documents/code/2026Workout/firestore.rules`.
+6. In `Authentication -> Settings -> Authorized domains`, add:
+   - `rasbasnet.github.io`
+   - `localhost` (for local testing)
 
 ## Data Model
 
