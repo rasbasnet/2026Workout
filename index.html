@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calisthenics Routine</title>
+  <meta name="description" content="WFH micro workouts + 2 intensive routines (no equipment). Includes APT + fascia resets with embedded videos." />
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #5b6475;
+      --line: #e6e8ef;
+      --accent: #2563eb;
+      --accent2:#16a34a;
+      --radius: 14px;
+      --shadow: 0 12px 30px rgba(15, 23, 42, .08);
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height:1.5;
+    }
+
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .wrap{max-width: 980px; margin: 0 auto; padding: 18px 16px 56px;}
+
+    header{
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(246,247,251,.86);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
+    }
+
+    h1{margin:0; font-size:16px; letter-spacing:.2px}
+    .sub{font-size:12.5px; color:var(--muted)}
+
+    .nav{
+      display:flex; gap:8px; flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .tab{
+      font-size:12.5px;
+      padding:9px 11px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: var(--card);
+      cursor:pointer;
+      user-select:none;
+    }
+    .tab.active{border-color: rgba(37,99,235,.35); box-shadow: 0 0 0 3px rgba(37,99,235,.08) inset;}
+
+    .search{
+      display:flex; align-items:center; gap:10px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: var(--card);
+      min-width:min(360px, 100%);
+    }
+    .search input{
+      width:100%;
+      border:0; outline:0;
+      background:transparent;
+      font-size:12.5px;
+      color:var(--text);
+    }
+
+    main{padding-top:16px;}
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .cardHeader{
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .cardHeader h2{margin:0; font-size:13.5px}
+    .meta{font-size:12.5px; color:var(--muted)}
+
+    .content{padding: 10px 14px 16px;}
+
+    .sectionHint{
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f2f5ff;
+      border: 1px solid #e3eaff;
+      color: #30416b;
+      font-size:12.5px;
+    }
+
+    details{
+      border-top: 1px solid var(--line);
+      padding: 10px 0;
+    }
+
+    summary{
+      list-style:none;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      padding: 8px 0;
+    }
+    summary::-webkit-details-marker{display:none}
+
+    .left{min-width:0}
+    .name{font-weight:700; font-size:13.5px}
+    .desc{font-size:12.5px; color:var(--muted)}
+
+    .tags{display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
+    .tag{
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:#fafbff;
+      white-space:nowrap;
+    }
+    .tag.apt{border-color:#d1fae5; background:#ecfdf5; color:#065f46}
+    .tag.fascia{border-color:#dbeafe; background:#eff6ff; color:#1d4ed8}
+    .tag.sweat{border-color:#ffedd5; background:#fff7ed; color:#9a3412}
+    .tag.posture{border-color:#e5e7eb; background:#f9fafb; color:#374151}
+
+    .player{
+      margin-top: 10px;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      overflow:hidden;
+      background:#000;
+      aspect-ratio: 16/9;
+    }
+    .player iframe{width:100%; height:100%; border:0; display:block;}
+
+    .steps{margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;}
+    .step{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcff;
+    }
+    .step .st{min-width:0}
+    .step .t{font-size:12.75px; font-weight:650}
+    .step .n{font-size:12.5px; color:var(--muted)}
+
+    .btn{
+      font-size:12.5px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: var(--card);
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .btn:hover{border-color: rgba(37,99,235,.35)}
+
+    .note{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size:12.5px;
+    }
+
+    /* Keep the video visible while you scroll within a routine */
+    .stickyPlayer{
+      position: sticky;
+      top: 86px; /* below header */
+      z-index: 2;
+    }
+
+    @media (max-width: 620px){
+      .search{min-width:100%}
+      .stickyPlayer{top: 120px;}
+    }
+
+    @media print{
+      header{position:static; background:transparent; border:0}
+      .nav,.search{display:none !important}
+      body{background:#fff}
+      .card{box-shadow:none}
+      .player{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h1>Calisthenics Routine</h1>
+          <div class="sub">WFH micro workouts + 2 intensive routines • APT + fascia included • mat only</div>
+        </div>
+        <div class="nav">
+          <div class="tab active" data-tab="wfh">WFH Micro</div>
+          <div class="tab" data-tab="intense">Intensive</div>
+          <div class="tab" data-tab="library">Exercise Library</div>
+          <div class="tab" data-tab="how">How to use</div>
+        </div>
+        <div class="search" title="Search within the current tab">
+          <span style="opacity:.55">⌕</span>
+          <input id="q" type="text" placeholder="Search… (dead bug, hip flexor, push-up, fascia)" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="cardHeader">
+        <div>
+          <h2 id="sectionTitle">WFH: 10 Micro Workouts (≈5 min each)</h2>
+          <div class="meta" id="sectionMeta">Pick 3–6/day. Micro #1 + #2 are your staples for APT + fascia.</div>
+        </div>
+        <div class="meta">Tip: tap any exercise’s “Play” to load its video below.</div>
+      </div>
+
+      <div class="content" id="tab-wfh"></div>
+      <div class="content" id="tab-intense" style="display:none"></div>
+      <div class="content" id="tab-library" style="display:none"></div>
+      <div class="content" id="tab-how" style="display:none">
+        <div class="sectionHint">
+          <b>WFH days:</b> Do Micro #1 + #2 daily, then add 1–4 more depending on time/energy.
+          <br><br>
+          <b>Away days:</b> Pick Intensive A or B (alternate each time).
+          <br><br>
+          <b>APT cues:</b> “Ribs down” + “glutes lightly on” + don’t over-arch your lower back.
+          <br><br>
+          <b>Videos:</b> The player uses a YouTube embedded search for each move (works well on GitHub Pages). You can change the search text later to match your favorite tutorial.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Minimal, information-only site.
+    // Videos are embedded via YouTube search embeds so you don't have to maintain video IDs.
+
+    function ytSearchEmbed(q){
+      const query = encodeURIComponent(q);
+      return `https://www.youtube.com/embed?listType=search&list=${query}`;
+    }
+
+    // Map an exercise label to a YouTube search query.
+    const VIDEO_QUERY = {
+      "Jason van Blerk fascia reset": "Jason van Blerk fascia reset 10 minutes",
+      "90/90 breathing": "90 90 diaphragmatic breathing pelvis ribs down",
+      "pelvic tilt": "supine posterior pelvic tilt drill",
+      "dead bug": "dead bug exercise proper form",
+      "plank": "plank proper form ribs down",
+      "side plank": "side plank proper form",
+      "bird dog": "bird dog exercise proper form",
+      "glute bridge": "glute bridge exercise proper form",
+      "single-leg glute bridge": "single leg glute bridge proper form",
+      "bodyweight squat": "bodyweight squat proper form",
+      "reverse lunge": "reverse lunge proper form",
+      "bulgarian split squat": "bulgarian split squat proper form",
+      "hip hinge": "hip hinge drill bodyweight",
+      "hip flexor stretch": "half kneeling hip flexor stretch pelvic tilt",
+      "couch stretch": "couch stretch hip flexor stretch",
+      "cat cow": "cat cow stretch",
+      "open book": "open book thoracic rotation stretch",
+      "push up": "push up proper form",
+      "knee push up": "knee push up proper form",
+      "pike push up": "pike push up tutorial",
+      "mountain climbers": "mountain climbers exercise proper form",
+      "burpees no push up": "burpee no push up low impact",
+      "wall sit": "wall sit proper form",
+      "hollow hold": "bent knee hollow hold",
+      "prone ytw": "prone y t w raises",
+      "reverse snow angels": "reverse snow angels exercise",
+      "superman hold": "superman hold exercise"
+    };
+
+    // Helper to pick a default video for a routine.
+    function pickVideoEmbed(key){
+      const q = VIDEO_QUERY[key] || key;
+      return ytSearchEmbed(q);
+    }
+
+    // Routine builder helpers
+    function ex(name, note, key){
+      return { name, note, key: key || name };
+    }
+
+    function micro(id, name, desc, tags, defaultVideoKey, steps, note){
+      return { id, name, desc, tags, defaultVideoKey, steps, note };
+    }
+
+    function tagChip(t){
+      const span = document.createElement('span');
+      span.className = `tag ${t}`;
+      span.textContent = t.toUpperCase();
+      return span;
+    }
+
+    const MICRO = [
+      micro(
+        'micro1',
+        'Micro #1 — APT Reset (daily staple)',
+        'Pelvis control + hip flexors + glutes + deep core.',
+        ['apt'],
+        '90/90 breathing',
+        [
+          ex('90/90 breathing', '5 slow breaths (~60–90s)', '90/90 breathing'),
+          ex('Pelvic tilt', '~60s slow reps', 'pelvic tilt'),
+          ex('Half-kneeling hip flexor stretch', '30s/side', 'hip flexor stretch'),
+          ex('Glute bridge', '15 reps (1s pause)', 'glute bridge'),
+          ex('Dead bug', '6/side slow', 'dead bug')
+        ],
+        'Cue: ribs down + glutes lightly on. Avoid over-arching your lower back.'
+      ),
+      micro(
+        'micro2',
+        'Micro #2 — Fascia Spiral Reset (daily staple)',
+        'Rotation + breathing reset (Jason-style).',
+        ['fascia'],
+        'Jason van Blerk fascia reset',
+        [
+          ex('Standing trunk rotations', '60s with long exhales', 'open book'),
+          ex('Arm swings + gentle rotation', '60s relaxed', 'cat cow'),
+          ex('Cross-body reach + rotate', '60s alternating', 'open book'),
+          ex('Hip circles + step-back', '60s small circles', 'hip hinge'),
+          ex('Forward fold → slow roll-up', '60s, segment-by-segment', 'cat cow')
+        ],
+        'If you prefer: just press play on the Jason fascia reset and do the first 5 minutes.'
+      ),
+      micro(
+        'micro3',
+        'Micro #3 — Glute + Hamstrings',
+        'Posterior chain strength for pelvic control.',
+        ['apt'],
+        'glute bridge',
+        [
+          ex('Glute bridge', '10–15 reps', 'glute bridge'),
+          ex('Single-leg glute bridge', '6–10/side', 'single-leg glute bridge'),
+          ex('Hip hinge drill', '10 slow reps', 'hip hinge'),
+          ex('Plank', '20–30s', 'plank'),
+          ex('Repeat until 5 minutes', 'Keep quality high', '')
+        ],
+        'Go slow and feel hamstrings/glutes doing the work.'
+      ),
+      micro(
+        'micro4',
+        'Micro #4 — Deep Core Control',
+        'Anti-arch strength (stack ribs over pelvis).',
+        ['apt'],
+        'dead bug',
+        [
+          ex('Dead bug', '8/side', 'dead bug'),
+          ex('Side plank', '25–35s/side', 'side plank'),
+          ex('Bird dog', '6–8/side', 'bird dog'),
+          ex('Hollow hold (bent-knee)', '20–30s', 'hollow hold'),
+          ex('Repeat until 5 minutes', 'Slow, controlled', '')
+        ],
+        'If your low back lifts, shorten the range.'
+      ),
+      micro(
+        'micro5',
+        'Micro #5 — Hip Flexor + Quad Opener',
+        'Mobility to offset long sitting.',
+        ['apt'],
+        'hip flexor stretch',
+        [
+          ex('Half-kneeling hip flexor stretch', '45s/side', 'hip flexor stretch'),
+          ex('Couch stretch (hip flexor)', '30–45s/side', 'couch stretch'),
+          ex('Quad stretch (standing)', '30s/side', 'couch stretch'),
+          ex('Reverse lunge', '30s/side (controlled)', 'reverse lunge'),
+          ex('Breathe', '3 long exhales', '90/90 breathing')
+        ],
+        'Squeeze the back glute during hip flexor stretching.'
+      ),
+      micro(
+        'micro6',
+        'Micro #6 — Lower Body Strength',
+        'Simple legs (also supports fat loss).',
+        [],
+        'bodyweight squat',
+        [
+          ex('Bodyweight squat', '60s steady', 'bodyweight squat'),
+          ex('Reverse lunge', '60s alternating', 'reverse lunge'),
+          ex('Wall sit / squat hold', '40–60s', 'wall sit'),
+          ex('Bulgarian split squat', '30s/side', 'bulgarian split squat'),
+          ex('Repeat until 5 minutes', 'Stop 1–2 reps before failure', '')
+        ]
+      ),
+      micro(
+        'micro7',
+        'Micro #7 — Push + Brace',
+        'Upper body push + core control.',
+        [],
+        'push up',
+        [
+          ex('Push-up', '8–15 reps', 'push up'),
+          ex('Pike push-up', '6–12 reps', 'pike push up'),
+          ex('Plank', '20–30s', 'plank'),
+          ex('Knee push-up (if needed)', '8–15 reps', 'knee push up'),
+          ex('Repeat until 5 minutes', 'Incline push-ups are fine', '')
+        ]
+      ),
+      micro(
+        'micro8',
+        'Micro #8 — Sweat Snack (Intervals)',
+        'Quick conditioning.',
+        ['sweat'],
+        'mountain climbers',
+        [
+          ex('Burpees (no push-up)', '30s work', 'burpees no push up'),
+          ex('Easy march / breathe', '30s', ''),
+          ex('Mountain climbers', '30s work', 'mountain climbers'),
+          ex('Easy march / breathe', '30s', ''),
+          ex('Repeat', '5 rounds total (5 minutes)', '')
+        ],
+        'Low-impact: step back instead of jumping.'
+      ),
+      micro(
+        'micro9',
+        'Micro #9 — Posture Balance',
+        'Upper back work (helps if you sit a lot).',
+        ['posture'],
+        'prone ytw',
+        [
+          ex('Prone Y-T-W raises', '6 each shape', 'prone ytw'),
+          ex('Reverse snow angels', '12 reps', 'reverse snow angels'),
+          ex('Superman hold', '20–30s', 'superman hold'),
+          ex('Open book stretch', '30s/side', 'open book'),
+          ex('Repeat until 5 minutes', 'Keep reps smooth', '')
+        ]
+      ),
+      micro(
+        'micro10',
+        'Micro #10 — Rotation + Mobility Reset',
+        'Undo stiffness.',
+        ['fascia'],
+        'open book',
+        [
+          ex('Open book (thoracic rotation)', '60s total', 'open book'),
+          ex('Cat-cow', '60s', 'cat cow'),
+          ex('Half-kneeling hip flexor stretch', '30s/side', 'hip flexor stretch'),
+          ex('Standing rotations', '60s', 'open book'),
+          ex('Breathe', '3 long exhales', '90/90 breathing')
+        ]
+      )
+    ];
+
+    const INTENSE = [
+      {
+        id:'intA',
+        name:'Intensive A — Full Body Strength + Finisher (35–45 min)',
+        desc:'Strength bias with an APT-friendly warm-up.',
+        tags:['apt'],
+        defaultVideoKey: 'push up',
+        blocks:[
+          { title:'Warm-up (8 min)', steps:[
+            ex('Jason fascia reset', '2 min', 'Jason van Blerk fascia reset'),
+            ex('90/90 breathing', '4 breaths', '90/90 breathing'),
+            ex('Half-kneeling hip flexor stretch', '30s/side', 'hip flexor stretch'),
+            ex('Glute bridge', '12 slow reps', 'glute bridge')
+          ]},
+          { title:'Main (3–4 rounds)', steps:[
+            ex('Push-up', '8–15 reps', 'push up'),
+            ex('Bulgarian split squat', '8–12/side', 'bulgarian split squat'),
+            ex('Pike push-up', '6–12 reps', 'pike push up'),
+            ex('Single-leg glute bridge', '8–12/side', 'single-leg glute bridge'),
+            ex('Dead bug', '8/side', 'dead bug')
+          ]},
+          { title:'Finisher (6–10 min)', steps:[
+            ex('Burpees (no push-up)', '30s on / 30s off × 6–10', 'burpees no push up')
+          ]},
+          { title:'Cool-down (3–5 min)', steps:[
+            ex('Hip flexor stretch', '45s/side', 'hip flexor stretch'),
+            ex('90/90 breathing', '3 long exhales', '90/90 breathing')
+          ]}
+        ]
+      },
+      {
+        id:'intB',
+        name:'Intensive B — Conditioning + Core Control (35–45 min)',
+        desc:'Sweat + core/glute work to support APT.',
+        tags:['apt','sweat'],
+        defaultVideoKey: 'mountain climbers',
+        blocks:[
+          { title:'Warm-up (7–10 min)', steps:[
+            ex('Jason fascia reset', '5–10 min', 'Jason van Blerk fascia reset'),
+            ex('Cat-cow', '45–60s', 'cat cow'),
+            ex('Open book', '30s/side', 'open book')
+          ]},
+          { title:'HIIT (16 min)', steps:[
+            ex('Squat thrusts', '40s work / 20s rest × 8 (2 rounds)', 'bodyweight squat'),
+            ex('High knees / fast march', 'part of HIIT', 'burpees no push up'),
+            ex('Reverse lunges', 'part of HIIT', 'reverse lunge'),
+            ex('Mountain climbers', 'part of HIIT', 'mountain climbers')
+          ]},
+          { title:'Strength/Core (10–12 min) — 3 rounds', steps:[
+            ex('Glute bridge', '20 reps', 'glute bridge'),
+            ex('Side plank', '30–45s/side', 'side plank'),
+            ex('Bodyweight squat', '12 reps (slow 3s down)', 'bodyweight squat')
+          ]},
+          { title:'Cool-down (3–5 min)', steps:[
+            ex('Couch stretch', '45s/side', 'couch stretch'),
+            ex('90/90 breathing', '3 long exhales', '90/90 breathing')
+          ]}
+        ]
+      }
+    ];
+
+    const LIBRARY = [
+      { label:'Jason van Blerk fascia reset', key:'Jason van Blerk fascia reset', tags:['fascia'] },
+      { label:'90/90 breathing', key:'90/90 breathing', tags:['apt'] },
+      { label:'Pelvic tilt', key:'pelvic tilt', tags:['apt'] },
+      { label:'Dead bug', key:'dead bug', tags:['apt'] },
+      { label:'Plank', key:'plank', tags:['core'] },
+      { label:'Side plank', key:'side plank', tags:['core'] },
+      { label:'Bird dog', key:'bird dog', tags:['core'] },
+      { label:'Glute bridge', key:'glute bridge', tags:['apt'] },
+      { label:'Single-leg glute bridge', key:'single-leg glute bridge', tags:['apt'] },
+      { label:'Hip hinge drill', key:'hip hinge', tags:['apt'] },
+      { label:'Hip flexor stretch', key:'hip flexor stretch', tags:['apt'] },
+      { label:'Couch stretch', key:'couch stretch', tags:['apt'] },
+      { label:'Bodyweight squat', key:'bodyweight squat', tags:['legs'] },
+      { label:'Reverse lunge', key:'reverse lunge', tags:['legs'] },
+      { label:'Bulgarian split squat', key:'bulgarian split squat', tags:['legs'] },
+      { label:'Push-up', key:'push up', tags:['push'] },
+      { label:'Knee push-up', key:'knee push up', tags:['push'] },
+      { label:'Pike push-up', key:'pike push up', tags:['push'] },
+      { label:'Mountain climbers', key:'mountain climbers', tags:['sweat'] },
+      { label:'Burpees (no push-up)', key:'burpees no push up', tags:['sweat'] },
+      { label:'Wall sit', key:'wall sit', tags:['legs'] },
+      { label:'Hollow hold (bent-knee)', key:'hollow hold', tags:['core'] },
+      { label:'Prone Y-T-W raises', key:'prone ytw', tags:['posture'] },
+      { label:'Reverse snow angels', key:'reverse snow angels', tags:['posture'] },
+      { label:'Superman hold', key:'superman hold', tags:['posture'] },
+      { label:'Cat-cow', key:'cat cow', tags:['mobility'] },
+      { label:'Open book stretch', key:'open book', tags:['mobility'] }
+    ];
+
+    // --- UI rendering ---
+    const tabs = document.querySelectorAll('.tab');
+    const qInput = document.getElementById('q');
+
+    const paneWFH = document.getElementById('tab-wfh');
+    const paneIntense = document.getElementById('tab-intense');
+    const paneLibrary = document.getElementById('tab-library');
+    const paneHow = document.getElementById('tab-how');
+
+    const sectionTitle = document.getElementById('sectionTitle');
+    const sectionMeta = document.getElementById('sectionMeta');
+
+    function clear(el){ el.innerHTML = ''; }
+
+    function renderRoutineList(root, items, mode){
+      clear(root);
+
+      const hint = document.createElement('div');
+      hint.className = 'sectionHint';
+      hint.innerHTML = (mode === 'wfh')
+        ? '<b>WFH:</b> do 3–6 micro workouts/day. Micro #1 + #2 are your staples.'
+        : '<b>Intensive:</b> alternate A and B. Each is ~35–45 minutes.';
+      root.appendChild(hint);
+
+      items.forEach((item, idx) => {
+        const det = document.createElement('details');
+        det.dataset.search = (item.name + ' ' + item.desc + ' ' + (item.tags||[]).join(' ')).toLowerCase();
+        if(mode === 'wfh' && (item.id === 'micro1' || item.id === 'micro2')) det.open = true;
+        if(mode === 'intense' && idx === 0) det.open = true;
+
+        const sum = document.createElement('summary');
+        const left = document.createElement('div'); left.className = 'left';
+        const name = document.createElement('div'); name.className = 'name'; name.textContent = item.name;
+        const desc = document.createElement('div'); desc.className = 'desc'; desc.textContent = item.desc;
+        left.appendChild(name); left.appendChild(desc);
+
+        const tags = document.createElement('div'); tags.className = 'tags';
+        (item.tags||[]).forEach(t => tags.appendChild(tagChip(t)));
+
+        sum.appendChild(left);
+        sum.appendChild(tags);
+        det.appendChild(sum);
+
+        // Sticky video player for this routine
+        const playerWrap = document.createElement('div');
+        playerWrap.className = 'stickyPlayer';
+        const player = document.createElement('div');
+        player.className = 'player';
+        const iframe = document.createElement('iframe');
+        iframe.loading = 'lazy';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.src = pickVideoEmbed(item.defaultVideoKey || item.defaultVideoKey);
+        player.appendChild(iframe);
+        playerWrap.appendChild(player);
+        det.appendChild(playerWrap);
+
+        // Steps
+        const list = document.createElement('ul');
+        list.className = 'steps';
+
+        function addStepRow(s){
+          const row = document.createElement('li');
+          row.className = 'step';
+          row.dataset.search = (s.name + ' ' + (s.note||'')).toLowerCase();
+
+          const st = document.createElement('div');
+          st.className = 'st';
+          const t = document.createElement('div'); t.className = 't'; t.textContent = s.name;
+          const n = document.createElement('div'); n.className = 'n'; n.textContent = s.note || '';
+          st.appendChild(t); st.appendChild(n);
+
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.textContent = 'Play';
+
+          if(!s.key){
+            btn.disabled = true;
+            btn.style.opacity = '.55';
+            btn.style.cursor = 'not-allowed';
+            btn.textContent = '—';
+          } else {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const key = String(s.key).toLowerCase();
+              const query = VIDEO_QUERY[key] || s.key;
+              iframe.src = ytSearchEmbed(query);
+              // keep the player in view
+              playerWrap.scrollIntoView({behavior:'smooth', block:'center'});
+            });
+          }
+
+          row.appendChild(st);
+          row.appendChild(btn);
+          list.appendChild(row);
+        }
+
+        if(mode === 'wfh'){
+          (item.steps||[]).forEach(s => addStepRow(s));
+        } else {
+          (item.blocks||[]).forEach(block => {
+            const blockTitle = document.createElement('div');
+            blockTitle.className = 'meta';
+            blockTitle.style.marginTop = '12px';
+            blockTitle.style.fontWeight = '700';
+            blockTitle.style.color = 'var(--text)';
+            blockTitle.textContent = block.title;
+            list.appendChild(blockTitle);
+            (block.steps||[]).forEach(s => addStepRow(s));
+          });
+        }
+
+        det.appendChild(list);
+
+        if(item.note){
+          const note = document.createElement('div');
+          note.className = 'note';
+          note.textContent = item.note;
+          det.appendChild(note);
+        }
+
+        root.appendChild(det);
+      });
+    }
+
+    function renderLibrary(){
+      clear(paneLibrary);
+
+      const hint = document.createElement('div');
+      hint.className = 'sectionHint';
+      hint.innerHTML = '<b>Library:</b> select an exercise to load its embedded video.';
+      paneLibrary.appendChild(hint);
+
+      // One always-visible player
+      const playerWrap = document.createElement('div');
+      playerWrap.className = 'stickyPlayer';
+      const player = document.createElement('div');
+      player.className = 'player';
+      const iframe = document.createElement('iframe');
+      iframe.loading = 'lazy';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.src = pickVideoEmbed('dead bug');
+      player.appendChild(iframe);
+      playerWrap.appendChild(player);
+      paneLibrary.appendChild(playerWrap);
+
+      // Minimal list
+      const list = document.createElement('ul');
+      list.className = 'steps';
+
+      LIBRARY.forEach(item => {
+        const row = document.createElement('li');
+        row.className = 'step';
+        row.dataset.search = (item.label + ' ' + (item.tags||[]).join(' ')).toLowerCase();
+
+        const st = document.createElement('div');
+        st.className = 'st';
+        const t = document.createElement('div'); t.className = 't'; t.textContent = item.label;
+        const n = document.createElement('div'); n.className = 'n'; n.textContent = (item.tags||[]).join(' • ');
+        st.appendChild(t); st.appendChild(n);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = 'Play';
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const key = String(item.key).toLowerCase();
+          const query = VIDEO_QUERY[key] || item.key;
+          iframe.src = ytSearchEmbed(query);
+          playerWrap.scrollIntoView({behavior:'smooth', block:'center'});
+        });
+
+        row.appendChild(st);
+        row.appendChild(btn);
+        list.appendChild(row);
+      });
+
+      paneLibrary.appendChild(list);
+
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.innerHTML = 'If you want, you can replace any YouTube search query in the code with a specific video ID later for a perfectly consistent tutorial.';
+      paneLibrary.appendChild(note);
+    }
+
+    function applySearch(){
+      const q = (qInput.value || '').trim().toLowerCase();
+      const active = document.querySelector('.tab.active')?.dataset.tab;
+      const pane = document.getElementById(`tab-${active}`);
+      if(!pane) return;
+      pane.querySelectorAll('[data-search]').forEach(node => {
+        const hay = node.dataset.search || '';
+        node.style.display = (!q || hay.includes(q)) ? '' : 'none';
+      });
+    }
+
+    function setActive(tab){
+      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+
+      paneWFH.style.display = tab === 'wfh' ? 'block' : 'none';
+      paneIntense.style.display = tab === 'intense' ? 'block' : 'none';
+      paneLibrary.style.display = tab === 'library' ? 'block' : 'none';
+      paneHow.style.display = tab === 'how' ? 'block' : 'none';
+
+      const titles = {
+        wfh: ['WFH: 10 Micro Workouts (≈5 min each)', 'Pick 3–6/day. Micro #1 + #2 are your staples for APT + fascia.'],
+        intense: ['Away Days: 2 Intensive Routines (35–45 min)', 'Alternate Intensive A and B.'],
+        library: ['Exercise Library', 'Tap Play to load an embedded video for the move.'],
+        how: ['How to use', 'Simple rules so this stays easy.']
+      };
+      sectionTitle.textContent = titles[tab][0];
+      sectionMeta.textContent = titles[tab][1];
+
+      applySearch();
+    }
+
+    // Initial render
+    renderRoutineList(paneWFH, MICRO, 'wfh');
+    renderRoutineList(paneIntense, INTENSE, 'intense');
+    renderLibrary();
+
+    // Tabs
+    tabs.forEach(t => t.addEventListener('click', () => setActive(t.dataset.tab)));
+
+    // Search
+    qInput.addEventListener('input', applySearch);
+
+    setActive('wfh');
+  </script>
+</body>
+</html>
