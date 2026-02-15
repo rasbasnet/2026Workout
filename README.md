@@ -37,7 +37,8 @@ A multi-page workout website with Firebase login, workout tracking, food trackin
   1. Open Firebase Console -> Firestore Database -> Rules
   2. Paste rules from `/Users/rasbasnet/Documents/code/2026Workout/firestore.rules`
   3. Publish rules, then refresh the app
-- If save actions fail with `failed-precondition`, enable Firestore first.
+- If save actions fail with `failed-precondition`, enable Firestore first (Firestore Database -> Create database -> Native mode).
+- If save actions time out, disable VPN/ad-blockers/privacy extensions for the site and retry.
 
 ## Data Model
 

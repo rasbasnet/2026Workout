@@ -39,14 +39,15 @@ export const isFirebaseConfigured = Object.values(firebaseConfig).every(
 let app;
 let auth;
 let db;
-const FIREBASE_TIMEOUT_MS = 12000;
+const FIREBASE_TIMEOUT_MS = 25000;
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = initializeFirestore(app, {
-    experimentalAutoDetectLongPolling: true,
-    useFetchStreams: false
+    experimentalForceLongPolling: true,
+    useFetchStreams: false,
+    ignoreUndefinedProperties: true
   });
 }
 
@@ -80,7 +81,7 @@ export function formatFirebaseError(error) {
     return "Firestore quota exceeded. Check Firebase usage limits.";
   }
   if (code === "timeout") {
-    return "Save request timed out. Confirm Firestore is enabled and rules allow writes for your user.";
+    return "Save request timed out. Check Firestore is enabled (Native mode), rules are published, and disable VPN/ad-blocker for this site.";
   }
   if (code === "network-request-failed") {
     return "Network request failed. Check internet and try again.";
