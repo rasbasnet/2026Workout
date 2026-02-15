@@ -15,6 +15,30 @@ export function setStatus(message = "", type = "") {
   status.className = type ? type : "";
 }
 
+let loaderInitialized = false;
+
+export function initPageLoader() {
+  if (loaderInitialized) return;
+  loaderInitialized = true;
+
+  const loader = document.createElement("div");
+  loader.className = "page-loader";
+  loader.innerHTML = '<span class="bar"></span>';
+  document.body.appendChild(loader);
+
+  const close = () => {
+    loader.classList.add("done");
+    window.setTimeout(() => loader.remove(), 320);
+  };
+
+  if (document.readyState === "complete") {
+    close();
+  } else {
+    window.addEventListener("load", close, { once: true });
+    window.setTimeout(close, 900);
+  }
+}
+
 export function requireFirebaseOrShowError() {
   if (!isFirebaseConfigured) {
     showConfigError();
@@ -24,6 +48,8 @@ export function requireFirebaseOrShowError() {
 }
 
 export function wireGlobalActions() {
+  initPageLoader();
+
   const signOutBtn = document.getElementById("signOutBtn");
   if (!signOutBtn) return;
 

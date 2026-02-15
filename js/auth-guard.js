@@ -1,7 +1,8 @@
 import { watchAuth, isFirebaseConfigured } from "./firebase.js";
-import { fillUserChip, requireFirebaseOrShowError } from "./layout.js";
+import { fillUserChip, requireFirebaseOrShowError, initPageLoader } from "./layout.js";
 
 export function protectPage(onAuthenticated) {
+  initPageLoader();
   if (!requireFirebaseOrShowError()) return;
 
   watchAuth((user) => {
@@ -17,6 +18,7 @@ export function protectPage(onAuthenticated) {
 }
 
 export function initLoginGate(onAuthenticated) {
+  initPageLoader();
   if (!isFirebaseConfigured) {
     const status = document.getElementById("status");
     if (status) {

@@ -4,12 +4,15 @@ import {
   resolveGoogleRedirect
 } from "./firebase.js";
 import { initLoginGate } from "./auth-guard.js";
+import { initPageLoader } from "./layout.js";
 
 const status = document.getElementById("status");
 const googleBtn = document.getElementById("googleSignInBtn");
 
 const params = new URLSearchParams(window.location.search);
 const next = params.get("next") || "index.html";
+
+initPageLoader();
 
 function setStatus(message = "", type = "") {
   if (!status) return;

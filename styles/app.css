@@ -32,6 +32,29 @@ body {
   background: linear-gradient(180deg, var(--bg), var(--bg-2));
 }
 
+.page-loader {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 2px;
+  z-index: 999;
+  background: transparent;
+}
+
+.page-loader .bar {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  animation: slide-loader 0.9s ease-in-out infinite;
+}
+
+.page-loader.done {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
 a {
   color: inherit;
 }
@@ -544,6 +567,38 @@ th {
   max-width: 1080px;
 }
 
+.route-routine {
+  --bg: #0b1017;
+  --card: #111827;
+  --text: #e6edf7;
+  --muted: #9aa8ba;
+  --border: #253246;
+  --accent: #7f8bff;
+  --accentSoft: rgba(127, 139, 255, 0.2);
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.route-routine .topnav .pill,
+.route-routine .tag,
+.route-routine .steps li,
+.route-routine .player,
+.route-routine .miniNote,
+.route-routine button.play,
+.route-routine .kbd {
+  background: #0f1825 !important;
+  border-color: #233247 !important;
+  color: #c6d2e4 !important;
+}
+
+.route-routine .routine-toggle {
+  margin-left: auto;
+  min-width: 70px;
+}
+
+.route-routine .routine-collapsed .grid {
+  display: none !important;
+}
+
 .route-routine .steps li {
   padding: 8px 9px;
   margin: 8px 0;
@@ -604,5 +659,20 @@ th {
   .form-row,
   .step-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes slide-loader {
+  0% {
+    transform: translateX(-20%);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(130%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(250%);
+    opacity: 0.7;
   }
 }

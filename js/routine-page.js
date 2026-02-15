@@ -19,13 +19,28 @@ function injectRoutineControls() {
   const expandBtn = document.getElementById("expandPlayersBtn");
 
   const allPlayers = () => [...document.querySelectorAll(".routine .player")];
+  const allRoutines = () => [...document.querySelectorAll(".routine[data-routine]")];
 
   const collapseAll = () => {
     allPlayers().forEach((panel) => panel.classList.add("hidden"));
+    allRoutines().forEach((routine, index) => {
+      if (index === 0) {
+        routine.classList.remove("routine-collapsed");
+      } else {
+        routine.classList.add("routine-collapsed");
+      }
+      const toggle = routine.querySelector(".routine-toggle");
+      if (toggle) toggle.textContent = routine.classList.contains("routine-collapsed") ? "Open" : "Hide";
+    });
   };
 
   const expandAll = () => {
     allPlayers().forEach((panel) => panel.classList.remove("hidden"));
+    allRoutines().forEach((routine) => {
+      routine.classList.remove("routine-collapsed");
+      const toggle = routine.querySelector(".routine-toggle");
+      if (toggle) toggle.textContent = "Hide";
+    });
   };
 
   collapseBtn?.addEventListener("click", collapseAll);
@@ -40,6 +55,31 @@ function injectRoutineControls() {
     const routine = button.closest("[data-routine]");
     const player = routine?.querySelector(".player");
     if (player) player.classList.remove("hidden");
+    if (routine) {
+      routine.classList.remove("routine-collapsed");
+      const toggle = routine.querySelector(".routine-toggle");
+      if (toggle) toggle.textContent = "Hide";
+    }
+  });
+
+  allRoutines().forEach((routine, index) => {
+    const head = routine.querySelector(".routineHead");
+    if (!head) return;
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "ghost routine-toggle";
+    toggle.textContent = index === 0 ? "Hide" : "Open";
+
+    toggle.addEventListener("click", () => {
+      routine.classList.toggle("routine-collapsed");
+      toggle.textContent = routine.classList.contains("routine-collapsed") ? "Open" : "Hide";
+    });
+
+    head.appendChild(toggle);
+    if (index !== 0) {
+      routine.classList.add("routine-collapsed");
+    }
   });
 }
 
